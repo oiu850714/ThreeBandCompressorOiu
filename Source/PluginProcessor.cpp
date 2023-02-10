@@ -8,14 +8,15 @@
 
 #include "PluginProcessor.h"
 
-#include "PluginEditor.h"
 #include "ParamIDConst.h"
-
-using namespace Param;
+#include "PluginEditor.h"
 
 using APVTS = juce::AudioProcessorValueTreeState;
 static APVTS::ParameterLayout createParameterLayout() {
   using namespace juce;
+
+  using namespace Params;
+  const auto& params = Params::getParams();
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
       releaseRange = attackRange;
   const auto ratioChoices = [] {
@@ -29,14 +30,21 @@ static APVTS::ParameterLayout createParameterLayout() {
   }();
   return {
       std::make_unique<AudioParameterFloat>(
-          ThresholdID, ThresholdID,
+          params.at(Names::Threshold_Low_Band),
+          params.at(Names::Threshold_Low_Band),
           NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
-      std::make_unique<AudioParameterFloat>(AttackID, AttackID, attackRange,
-                                            50.f),
-      std::make_unique<AudioParameterFloat>(ReleaseID, ReleaseID, releaseRange,
-                                            250.f),
-      std::make_unique<AudioParameterChoice>(RatioID, RatioID, ratioChoices, 3),
-      std::make_unique<AudioParameterBool>(BypassID, BypassID, false),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Low_Band),
+                                            params.at(Names::Attack_Low_Band),
+                                            attackRange, 50.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Release_Low_Band),
+                                            params.at(Names::Release_Low_Band),
+                                            releaseRange, 250.f),
+      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Low_Band),
+                                             params.at(Names::Ratio_Low_Band),
+                                             ratioChoices, 3),
+      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Low_Band),
+                                           params.at(Names::Bypassed_Low_Band),
+                                           false),
   };
 }
 
@@ -53,7 +61,8 @@ ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
 #endif
               ),
 #endif
-      apvts{*this, nullptr, "Parameters", createParameterLayout()}, compressor(apvts) {
+      apvts{*this, nullptr, "Parameters", createParameterLayout()},
+      compressor(apvts) {
 }
 
 ThreeBandCompressorOiuAudioProcessor::~ThreeBandCompressorOiuAudioProcessor() {}

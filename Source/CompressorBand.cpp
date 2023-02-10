@@ -12,17 +12,19 @@
 
 CompressorBand::CompressorBand(
     const juce::AudioProcessorValueTreeState &apvts) {
-  using namespace Param;
-  attack =
-      static_cast<juce::AudioParameterFloat *>(apvts.getParameter(AttackID));
-  release =
-      static_cast<juce::AudioParameterFloat *>(apvts.getParameter(ReleaseID));
-  threshold =
-      static_cast<juce::AudioParameterFloat *>(apvts.getParameter(ThresholdID));
-  ratio =
-      static_cast<juce::AudioParameterChoice *>(apvts.getParameter(RatioID));
-  bypassed =
-      static_cast<juce::AudioParameterBool *>(apvts.getParameter(BypassID));
+  using namespace Params;
+  const auto &params = Params::getParams();
+
+  auto setParam = [&apvts, &params](auto &paramPtr, const auto &paramName) {
+    paramPtr = static_cast<std::remove_reference_t<decltype(paramPtr)>>(
+        apvts.getParameter(params.at(paramName)));
+  };
+
+  setParam(attack, Names::Attack_Low_Band);
+  setParam(release, Names::Release_Low_Band);
+  setParam(threshold, Names::Threshold_Low_Band);
+  setParam(ratio, Names::Ratio_Low_Band);
+  setParam(bypassed, Names::Bypassed_Low_Band);
 }
 
 void CompressorBand::updateCompressorSettings() {
