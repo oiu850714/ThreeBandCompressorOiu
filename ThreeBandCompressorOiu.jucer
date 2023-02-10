@@ -5,6 +5,11 @@
               jucerFormatVersion="1" projectLineFeed="&#10;">
   <MAINGROUP id="Sgu6M2" name="ThreeBandCompressorOiu">
     <GROUP id="{DFDE9391-D014-11E2-E7EF-DFA10FD37929}" name="Source">
+      <FILE id="jibQS2" name="ParamIDConst.h" compile="0" resource="0" file="Source/ParamIDConst.h"/>
+      <FILE id="a4n79d" name="CompressorBand.cpp" compile="1" resource="0"
+            file="Source/CompressorBand.cpp"/>
+      <FILE id="VWIVKv" name="CompressorBand.h" compile="0" resource="0"
+            file="Source/CompressorBand.h"/>
       <FILE id="j07I0K" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="t3U1vQ" name="PluginProcessor.h" compile="0" resource="0"
@@ -39,6 +44,27 @@
         <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
+    <CODEBLOCKS_LINUX targetFolder="Builds/CodeBlocksLinux">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\Users\oiu85\Desktop\JUCE\modules"/>
+      </MODULEPATHS>
+    </CODEBLOCKS_LINUX>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

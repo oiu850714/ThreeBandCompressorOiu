@@ -9,10 +9,11 @@
 #include "PluginProcessor.h"
 
 #include "PluginEditor.h"
+#include "ParamIDConst.h"
+
+using namespace Param;
 
 using APVTS = juce::AudioProcessorValueTreeState;
-static const juce::String AttackID = "Attack", ReleaseID = "Release",
-                          ThresholdID = "Threshold", RatioID = "Ratio", BypassID = "Bypassed";
 static APVTS::ParameterLayout createParameterLayout() {
   using namespace juce;
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
@@ -52,17 +53,7 @@ ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
 #endif
               ),
 #endif
-      apvts{*this, nullptr, "Parameters", createParameterLayout()} {
-  attack =
-      static_cast<juce::AudioParameterFloat*>(apvts.getParameter(AttackID));
-  release =
-      static_cast<juce::AudioParameterFloat*>(apvts.getParameter(ReleaseID));
-  threshold =
-      static_cast<juce::AudioParameterFloat*>(apvts.getParameter(ThresholdID));
-  ratio =
-      static_cast<juce::AudioParameterChoice*>(apvts.getParameter(RatioID));
-  bypassed =
-      static_cast<juce::AudioParameterBool*>(apvts.getParameter(BypassID));
+      apvts{*this, nullptr, "Parameters", createParameterLayout()}, compressor(apvts) {
 }
 
 ThreeBandCompressorOiuAudioProcessor::~ThreeBandCompressorOiuAudioProcessor() {}
@@ -169,14 +160,8 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
-  auto dspBlock = juce::dsp::AudioBlock<float>(buffer);
-  auto dspContext = juce::dsp::ProcessContextReplacing<float>(dspBlock);
-  dspContext.isBypassed = bypassed->get();
-  compressor.setAttack(attack->get());
-  compressor.setRelease(release->get());
-  compressor.setThreshold(threshold->get());
-  compressor.setRatio(ratio->getCurrentChoiceName().getFloatValue());
-  compressor.process(dspContext);
+  compressor.updateCompressorSettings();
+  compressor.process(buffer);
 }
 
 //==============================================================================
