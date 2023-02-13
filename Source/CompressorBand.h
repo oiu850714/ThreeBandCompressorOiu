@@ -11,11 +11,18 @@
 #pragma once
 
 #include <JuceHeader.h>
+
 #include "ParamIDConst.h"
 
 class CompressorBand {
  public:
-  CompressorBand(const juce::AudioProcessorValueTreeState &apvts);
+  enum CompressorBandType {
+    Low,
+    Mid,
+    High,
+  };
+  CompressorBand(const juce::AudioProcessorValueTreeState &apvts,
+                 CompressorBandType);
   void prepare(const juce::dsp::ProcessSpec &spec) { compressor.prepare(spec); }
 
   void updateCompressorSettings();

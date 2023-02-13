@@ -48,6 +48,38 @@ static APVTS::ParameterLayout createParameterLayout() {
                                            params.at(Names::Bypassed_Low_Band),
                                            false),
       std::make_unique<AudioParameterFloat>(
+          params.at(Names::Threshold_Mid_Band),
+          params.at(Names::Threshold_Mid_Band),
+          NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Mid_Band),
+                                            params.at(Names::Attack_Mid_Band),
+                                            attackRange, 50.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Release_Mid_Band),
+                                            params.at(Names::Release_Mid_Band),
+                                            releaseRange, 250.f),
+      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Mid_Band),
+                                             params.at(Names::Ratio_Mid_Band),
+                                             ratioChoices, 3),
+      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Mid_Band),
+                                           params.at(Names::Bypassed_Mid_Band),
+                                           false),
+      std::make_unique<AudioParameterFloat>(
+          params.at(Names::Threshold_High_Band),
+          params.at(Names::Threshold_High_Band),
+          NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_High_Band),
+                                            params.at(Names::Attack_High_Band),
+                                            attackRange, 50.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Release_High_Band),
+                                            params.at(Names::Release_High_Band),
+                                            releaseRange, 250.f),
+      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_High_Band),
+                                             params.at(Names::Ratio_High_Band),
+                                             ratioChoices, 3),
+      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_High_Band),
+                                           params.at(Names::Bypassed_High_Band),
+                                           false),
+      std::make_unique<AudioParameterFloat>(
           params.at(Names::Low_Mid_Crossover_Freq),
           params.at(Names::Low_Mid_Crossover_Freq), lowMidCutRange, 400.f),
       std::make_unique<AudioParameterFloat>(
@@ -70,7 +102,9 @@ ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
               ),
 #endif
       apvts{*this, nullptr, "Parameters", createParameterLayout()},
-      compressor(apvts) {
+      compressors{CompressorBand{apvts, CompressorBand::Low},
+                  CompressorBand{apvts, CompressorBand::Mid},
+                  CompressorBand{apvts, CompressorBand::High}} {
   using namespace Params;
 
   const auto params = Params::getParams();
@@ -150,7 +184,9 @@ void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
   spec.numChannels = getTotalNumOutputChannels();
   spec.sampleRate = sampleRate;
 
-  compressor.prepare(spec);
+  for (auto& compressor : compressors) {
+    compressor.prepare(spec);
+  }
 
   LP1.prepare(spec);
   HP1.prepare(spec);
@@ -203,9 +239,6 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
-  compressor.updateCompressorSettings();
-  compressor.process(buffer);
-
   for (auto& filterBuffer : filterBuffers) {
     // Let LinkwitzRileyFilter operate on copied buffer and finally combine the
     // results back.
@@ -243,6 +276,12 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   // Third band.
   HP2.process(FB2Ctx);
 
+  // Compress each band after we split them.
+  for (size_t i = 0; i < 3; ++i) {
+    compressors[i].updateCompressorSettings();
+    compressors[i].process(filterBuffers[i]);
+  }
+
   // Now add the filtered three band results to the output.
   auto numSamples = buffer.getNumSamples();
   auto numChannels = buffer.getNumChannels();
@@ -258,6 +297,8 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   addFilterBand(buffer, filterBuffers[0]);
   addFilterBand(buffer, filterBuffers[1]);
   addFilterBand(buffer, filterBuffers[2]);
+
+
 }
 
 //==============================================================================

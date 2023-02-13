@@ -64,7 +64,11 @@ class ThreeBandCompressorOiuAudioProcessor
 
  private:
   //==============================================================================
-  CompressorBand compressor;
+  std::array<CompressorBand, 3> compressors;
+  // Create alias for getting and setting individual compressor's parameters.
+  CompressorBand &lowBandCompressor = compressors[0],
+                 &midBandCompressor = compressors[1],
+                 highBandCompressor = compressors[2];
 
   //==============================================================================
   // See: https://youtu.be/Mo0Oco3Vimo?t=9033
@@ -78,11 +82,10 @@ class ThreeBandCompressorOiuAudioProcessor
   Filter           HP2;
   // clang-format on
 
-  juce::AudioParameterFloat *lowMidCrossover {nullptr};
-  juce::AudioParameterFloat *midHighCrossover {nullptr};
+  juce::AudioParameterFloat* lowMidCrossover{nullptr};
+  juce::AudioParameterFloat* midHighCrossover{nullptr};
 
   std::array<juce::AudioBuffer<float>, 3> filterBuffers;
-
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
