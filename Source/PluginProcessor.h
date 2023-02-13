@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+
 #include "CompressorBand.h"
 
 //==============================================================================
@@ -60,10 +61,20 @@ class ThreeBandCompressorOiuAudioProcessor
   void setStateInformation(const void* data, int sizeInBytes) override;
 
   juce::AudioProcessorValueTreeState apvts;
+
  private:
   //==============================================================================
   CompressorBand compressor;
 
+  //==============================================================================
+  // filter details for each band.
+  using Filter = juce::dsp::LinkwitzRileyFilter<float>;
+  Filter lowPass, highPass;
+  juce::AudioParameterFloat* lowCrossover{nullptr};
+  juce::AudioParameterFloat* highCrossover{nullptr};
+  std::array<juce::AudioBuffer<float>, 2> filterBuffers;
+
+  //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessor)
 };
