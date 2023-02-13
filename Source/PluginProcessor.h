@@ -67,12 +67,22 @@ class ThreeBandCompressorOiuAudioProcessor
   CompressorBand compressor;
 
   //==============================================================================
-  // filter details for each band.
+  // See: https://youtu.be/Mo0Oco3Vimo?t=9033
+  // Filter details for each band.
+  // Make all three bands experience same "delay".
   using Filter = juce::dsp::LinkwitzRileyFilter<float>;
-  Filter lowPass, highPass;
-  juce::AudioParameterFloat* lowCrossover{nullptr};
-  juce::AudioParameterFloat* highCrossover{nullptr};
-  std::array<juce::AudioBuffer<float>, 2> filterBuffers;
+  // clang-format off
+  //        fc0    fc1
+  Filter    LP1,   AP2;
+  Filter    HP1,   LP2;
+  Filter           HP2;
+  // clang-format on
+
+  juce::AudioParameterFloat *lowMidCrossover {nullptr};
+  juce::AudioParameterFloat *midHighCrossover {nullptr};
+
+  std::array<juce::AudioBuffer<float>, 3> filterBuffers;
+
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

@@ -19,7 +19,8 @@ static APVTS::ParameterLayout createParameterLayout() {
   const auto& params = Params::getParams();
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
       releaseRange = attackRange;
-  const NormalisableRange<float> hearRange{20.f, 20000.f, 1.f, 0.2f};
+  const NormalisableRange<float> lowMidCutRange{20.f, 999.f, 1.f, 0.2f};
+  const NormalisableRange<float> MidHighCutRange{1000.f, 20000.f, 1.f, 0.2f};
   const auto ratioChoices = [] {
     std::vector<double> choices{1, 1.5, 2,  3,  4,  5,  6,
                                 7, 8,   10, 15, 20, 50, 100};
@@ -48,7 +49,10 @@ static APVTS::ParameterLayout createParameterLayout() {
                                            false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Low_Mid_Crossover_Freq),
-          params.at(Names::Low_Mid_Crossover_Freq), hearRange, 500.f),
+          params.at(Names::Low_Mid_Crossover_Freq), lowMidCutRange, 400.f),
+      std::make_unique<AudioParameterFloat>(
+          params.at(Names::Mid_High_Crossover_Freq),
+          params.at(Names::Mid_High_Crossover_Freq), MidHighCutRange, 2000.f),
   };
 }
 
@@ -75,11 +79,14 @@ ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
     paramPtr = static_cast<std::remove_reference_t<decltype(paramPtr)>>(
         apvts.getParameter(params.at(paramName)));
   };
-  setParam(lowCrossover, Names::Low_Mid_Crossover_Freq);
-  setParam(highCrossover, Names::Mid_High_Crossover_Freq);
+  setParam(lowMidCrossover, Names::Low_Mid_Crossover_Freq);
+  setParam(midHighCrossover, Names::Mid_High_Crossover_Freq);
 
-  lowPass.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
-  highPass.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+  LP1.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+  HP1.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+  AP2.setType(juce::dsp::LinkwitzRileyFilterType::allpass);
+  LP2.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
+  HP2.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
 }
 
 ThreeBandCompressorOiuAudioProcessor::~ThreeBandCompressorOiuAudioProcessor() {}
@@ -144,8 +151,12 @@ void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
   spec.sampleRate = sampleRate;
 
   compressor.prepare(spec);
-  lowPass.prepare(spec);
-  highPass.prepare(spec);
+
+  LP1.prepare(spec);
+  HP1.prepare(spec);
+  AP2.prepare(spec);
+  LP2.prepare(spec);
+  HP2.prepare(spec);
 
   for (auto& buffer : filterBuffers) {
     buffer.setSize(spec.numChannels, samplesPerBlock);
@@ -200,23 +211,45 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
     // results back.
     filterBuffer = buffer;
   }
-  auto cutOff = lowCrossover->get();
-  lowPass.setCutoffFrequency(cutOff);
-  highPass.setCutoffFrequency(cutOff);
+  auto lowMidcutOffFreq = lowMidCrossover->get();
+  auto midHighcutOffFreq = midHighCrossover->get();
+  LP1.setCutoffFrequency(lowMidcutOffFreq);
+  HP1.setCutoffFrequency(lowMidcutOffFreq);
+  AP2.setCutoffFrequency(midHighcutOffFreq);
+  LP2.setCutoffFrequency(midHighcutOffFreq);
+  HP2.setCutoffFrequency(midHighcutOffFreq);
 
-  auto filterBuffer0Ctx = juce::dsp::ProcessContextReplacing<float>(
+  auto FB0Ctx = juce::dsp::ProcessContextReplacing<float>(
       juce::dsp::AudioBlock<float>{filterBuffers[0]});
-  auto filterBuffer1Ctx = juce::dsp::ProcessContextReplacing<float>(
+  auto FB1Ctx = juce::dsp::ProcessContextReplacing<float>(
       juce::dsp::AudioBlock<float>{filterBuffers[1]});
+  auto FB2Ctx = juce::dsp::ProcessContextReplacing<float>(
+      juce::dsp::AudioBlock<float>{filterBuffers[2]});
 
-  lowPass.process(filterBuffer0Ctx);
-  highPass.process(filterBuffer1Ctx);
+  // See https://youtu.be/Mo0Oco3Vimo?t=9608
 
+  // First band.
+  LP1.process(FB0Ctx);
+  AP2.process(FB0Ctx);
+
+  // Second band.
+  HP1.process(FB1Ctx);
+  // See the video above.
+  // We need to first copy the filtered result to the third buffer;
+  // after that we continue to process the result in the second buffer.
+  filterBuffers[2] = filterBuffers[1];
+  LP2.process(FB1Ctx);
+
+  // Third band.
+  HP2.process(FB2Ctx);
+
+  // Now add the filtered three band results to the output.
   auto numSamples = buffer.getNumSamples();
   auto numChannels = buffer.getNumChannels();
   buffer.clear();
 
-  auto addFilterBand = [ns = numSamples, nc = numChannels](auto &inputBuffer, const auto &source) {
+  auto addFilterBand = [ns = numSamples, nc = numChannels](auto& inputBuffer,
+                                                           const auto& source) {
     for (auto i = 0; i < nc; ++i) {
       inputBuffer.addFrom(i, 0, source, i, 0, ns);
     }
@@ -224,6 +257,7 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
 
   addFilterBand(buffer, filterBuffers[0]);
   addFilterBand(buffer, filterBuffers[1]);
+  addFilterBand(buffer, filterBuffers[2]);
 }
 
 //==============================================================================
