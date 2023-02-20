@@ -337,8 +337,9 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
 
   if (compressors[0].isSolo() || compressors[1].isSolo() ||
       compressors[2].isSolo()) {
-    // If any of compressor is in solo, then we add the corresponding buffer only.
-    // (But we prefer compressor with smaller index if multiple compressors are in solo.)
+    // If any of compressor is in solo, then we add the corresponding buffer
+    // only. (But we prefer compressor with smaller index if multiple
+    // compressors are in solo.)
     compressors[0].isSolo()   ? addFilterBand(buffer, filterBuffers[0])
     : compressors[1].isSolo() ? addFilterBand(buffer, filterBuffers[1])
                               : addFilterBand(buffer, filterBuffers[2]);
