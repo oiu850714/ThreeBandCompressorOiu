@@ -39,7 +39,7 @@ class ThreeBandCompressorOiuAudioProcessorEditor
     juce::Colour customColor;
   };
 
-  GlobalControls globalControls;
+  GlobalControls globalControls {audioProcessor.apvts};
   Placeholder controlBar, analyzer, bandControls;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

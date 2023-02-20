@@ -8,6 +8,10 @@
       <FILE id="jibQS2" name="ParamIDConst.h" compile="0" resource="0" file="Source/ParamIDConst.h"/>
       <FILE id="a4n79d" name="CompressorBand.cpp" compile="1" resource="0"
             file="Source/CompressorBand.cpp"/>
+      <FILE id="OMvRZv" name="GlobalControlsComponent.cpp" compile="1" resource="0"
+            file="Source/GlobalControlsComponent.cpp"/>
+      <FILE id="BBHbuj" name="GlobalControlsComponent.h" compile="0" resource="0"
+            file="Source/GlobalControlsComponent.h"/>
       <FILE id="VWIVKv" name="CompressorBand.h" compile="0" resource="0"
             file="Source/CompressorBand.h"/>
       <FILE id="j07I0K" name="PluginProcessor.cpp" compile="1" resource="0"

@@ -13,5 +13,29 @@
 #include <JuceHeader.h>
 
 class GlobalControls : public juce::Component {
+ public:
+  GlobalControls(juce::AudioProcessorValueTreeState &apvts);
   void paint(juce::Graphics &g) override;
+  void resized() override;
+
+ private:
+  class RotarySlider : public juce::Slider {
+   public:
+    RotarySlider()
+        : juce::Slider(juce::Slider::RotaryHorizontalVerticalDrag,
+                       juce::Slider::NoTextBox) {}
+  };
+
+  // clang-format off
+  RotarySlider inGainSlider,
+               lowMidXoverSlider,
+               midHighXoverSlider,
+               outGainSlider;
+
+  using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+  std::unique_ptr<Attachment> inGainSliderAttachment,
+                              lowMidXoverSliderAttachment,
+                              midHighXoverSliderAttachment,
+                              outGainSliderAttachment;
+  // clang-format on
 };
