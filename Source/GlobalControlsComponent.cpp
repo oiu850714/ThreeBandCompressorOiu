@@ -9,19 +9,22 @@
 */
 
 #include "GlobalControlsComponent.h"
+
 #include "ParamIDConst.h"
 
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts) {
   using namespace Params;
-  auto params = Params::getParams();
+  auto &params = Params::getParams();
 
-  auto makeAttachment = [&params, &apvts] (auto &slider, auto param) {
+  auto makeAttachment = [&params, &apvts](auto &slider, auto param) {
     return std::make_unique<Attachment>(apvts, params.at(param), slider);
   };
 
   inGainSliderAttachment = makeAttachment(inGainSlider, Names::Gain_In);
-  lowMidXoverSliderAttachment = makeAttachment(lowMidXoverSlider, Names::Low_Mid_Crossover_Freq);
-  midHighXoverSliderAttachment = makeAttachment(midHighXoverSlider, Names::Mid_High_Crossover_Freq);
+  lowMidXoverSliderAttachment =
+      makeAttachment(lowMidXoverSlider, Names::Low_Mid_Crossover_Freq);
+  midHighXoverSliderAttachment =
+      makeAttachment(midHighXoverSlider, Names::Mid_High_Crossover_Freq);
   outGainSliderAttachment = makeAttachment(outGainSlider, Names::Gain_Out);
 
   addAndMakeVisible(inGainSlider);
@@ -30,7 +33,7 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts) {
   addAndMakeVisible(outGainSlider);
 }
 
-void GlobalControls::paint(juce::Graphics& g) {
+void GlobalControls::paint(juce::Graphics &g) {
   using namespace juce;
 
   // border
