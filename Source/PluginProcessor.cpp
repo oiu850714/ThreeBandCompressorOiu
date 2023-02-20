@@ -18,6 +18,7 @@ static APVTS::ParameterLayout createParameterLayout() {
   using namespace Params;
   const auto& params = Params::getParams();
   const NormalisableRange<float> gainRange{-24.f, 24.f, 0.5f, 1.f};
+  const NormalisableRange<float> thresholdRange(-60.f, 12.f, 1.f, 1.f);
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
       releaseRange = attackRange;
   const NormalisableRange<float> lowMidCutRange{20.f, 999.f, 1.f, 0.2f};
@@ -39,8 +40,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                             gainRange, 0.f),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_Low_Band),
-          params.at(Names::Threshold_Low_Band),
-          NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
+          params.at(Names::Threshold_Low_Band), thresholdRange, 0.f),
       std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Low_Band),
                                             params.at(Names::Attack_Low_Band),
                                             attackRange, 50.f),
@@ -61,8 +61,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                            false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_Mid_Band),
-          params.at(Names::Threshold_Mid_Band),
-          NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
+          params.at(Names::Threshold_Mid_Band), thresholdRange, 0.f),
       std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Mid_Band),
                                             params.at(Names::Attack_Mid_Band),
                                             attackRange, 50.f),
@@ -83,8 +82,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                            false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_High_Band),
-          params.at(Names::Threshold_High_Band),
-          NormalisableRange<float>(-60.f, 12.f, 1.f, 1.f), 0.f),
+          params.at(Names::Threshold_High_Band), thresholdRange, 0.f),
       std::make_unique<AudioParameterFloat>(params.at(Names::Attack_High_Band),
                                             params.at(Names::Attack_High_Band),
                                             attackRange, 50.f),
