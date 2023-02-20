@@ -287,10 +287,10 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   auto numChannels = buffer.getNumChannels();
   buffer.clear();
 
-  auto addFilterBand = [ns = numSamples, nc = numChannels](auto& inputBuffer,
+  auto addFilterBand = [ns = numSamples, nc = numChannels](auto& buffer,
                                                            const auto& source) {
     for (auto i = 0; i < nc; ++i) {
-      inputBuffer.addFrom(i, 0, source, i, 0, ns);
+      buffer.addFrom(i, 0, source, i, 0, ns);
     }
   };
 
