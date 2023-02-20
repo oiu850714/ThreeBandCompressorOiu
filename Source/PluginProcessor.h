@@ -85,13 +85,17 @@ class ThreeBandCompressorOiuAudioProcessor
   juce::AudioParameterFloat* lowMidCrossover{nullptr};
   juce::AudioParameterFloat* midHighCrossover{nullptr};
 
-  std::array<juce::AudioBuffer<float>, 3> filterBuffers;
+  std::array<juce::AudioBuffer<float>, 3> splittedBuffers;
+  //==============================================================================
 
   juce::dsp::Gain<float> inputGain, outputGain;
   juce::AudioParameterFloat *inputGainParam{nullptr};
   juce::AudioParameterFloat *outputGainParam{nullptr};
 
-  //==============================================================================
+  // Miscellaneous for processBlock().
+  void updateDSPStates();
+  void splitBands(const juce::AudioBuffer<float> &buffer);
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessor)
 };

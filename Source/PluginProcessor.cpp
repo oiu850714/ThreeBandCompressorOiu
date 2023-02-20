@@ -227,7 +227,7 @@ void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
   inputGain.prepare(spec);
   outputGain.prepare(spec);
 
-  for (auto& buffer : filterBuffers) {
+  for (auto& buffer : splittedBuffers) {
     buffer.setSize(spec.numChannels, samplesPerBlock);
   }
   inputGain.setRampDurationSeconds(0.05);
@@ -265,24 +265,10 @@ bool ThreeBandCompressorOiuAudioProcessor::isBusesLayoutSupported(
 }
 #endif
 
-void ThreeBandCompressorOiuAudioProcessor::processBlock(
-    juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
-  juce::ScopedNoDenormals noDenormals;
-  auto totalNumInputChannels = getTotalNumInputChannels();
-  auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    buffer.clear(i, 0, buffer.getNumSamples());
-
+void ThreeBandCompressorOiuAudioProcessor::updateDSPStates() {
   inputGain.setGainDecibels(inputGainParam->get());
   outputGain.setGainDecibels(outputGainParam->get());
-  applyGain(buffer, inputGain);
 
-  for (auto& filterBuffer : filterBuffers) {
-    // Let LinkwitzRileyFilter operate on copied buffer and finally combine the
-    // results back.
-    filterBuffer = buffer;
-  }
   auto lowMidcutOffFreq = lowMidCrossover->get();
   auto midHighcutOffFreq = midHighCrossover->get();
   LP1.setCutoffFrequency(lowMidcutOffFreq);
@@ -291,12 +277,23 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   LP2.setCutoffFrequency(midHighcutOffFreq);
   HP2.setCutoffFrequency(midHighcutOffFreq);
 
+  for (size_t i = 0; i < 3; ++i) {
+    compressors[i].updateCompressorSettings();
+  }
+}
+
+void ThreeBandCompressorOiuAudioProcessor::splitBands(const juce::AudioBuffer<float> &buffer) {
+  for (auto& splittedBuffer : splittedBuffers) {
+    // Let LinkwitzRileyFilter operate on copied buffer and finally combine the
+    // results back.
+    splittedBuffer = buffer;
+  }
   auto FB0Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{filterBuffers[0]});
+      juce::dsp::AudioBlock<float>{splittedBuffers[0]});
   auto FB1Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{filterBuffers[1]});
+      juce::dsp::AudioBlock<float>{splittedBuffers[1]});
   auto FB2Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{filterBuffers[2]});
+      juce::dsp::AudioBlock<float>{splittedBuffers[2]});
 
   // See https://youtu.be/Mo0Oco3Vimo?t=9608
 
@@ -309,16 +306,32 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   // See the video above.
   // We need to first copy the filtered result to the third buffer;
   // after that we continue to process the result in the second buffer.
-  filterBuffers[2] = filterBuffers[1];
+  splittedBuffers[2] = splittedBuffers[1];
   LP2.process(FB1Ctx);
 
   // Third band.
   HP2.process(FB2Ctx);
+}
+
+void ThreeBandCompressorOiuAudioProcessor::processBlock(
+    juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
+  juce::ScopedNoDenormals noDenormals;
+  auto totalNumInputChannels = getTotalNumInputChannels();
+  auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    buffer.clear(i, 0, buffer.getNumSamples());
+
+  updateDSPStates();
+
+  applyGain(buffer, inputGain);
+
+  splitBands(buffer);
+
 
   // Compress each band after we split them.
   for (size_t i = 0; i < 3; ++i) {
-    compressors[i].updateCompressorSettings();
-    compressors[i].process(filterBuffers[i]);
+    compressors[i].process(splittedBuffers[i]);
   }
 
   // Now add the filtered three band results to the output.
@@ -326,7 +339,7 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   auto numChannels = buffer.getNumChannels();
   buffer.clear();
 
-  auto addFilterBand = [ns = numSamples, nc = numChannels](auto& buffer,
+  auto addBackSplittedBuffer = [ns = numSamples, nc = numChannels](auto& buffer,
                                                            const auto& source) {
     for (auto i = 0; i < nc; ++i) {
       buffer.addFrom(i, 0, source, i, 0, ns);
@@ -338,14 +351,14 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
     // If any of compressor is in solo, then we add the corresponding buffer
     // only. (But we prefer compressor with smaller index if multiple
     // compressors are in solo.)
-    compressors[0].isSolo()   ? addFilterBand(buffer, filterBuffers[0])
-    : compressors[1].isSolo() ? addFilterBand(buffer, filterBuffers[1])
-                              : addFilterBand(buffer, filterBuffers[2]);
+    compressors[0].isSolo()   ? addBackSplittedBuffer(buffer, splittedBuffers[0])
+    : compressors[1].isSolo() ? addBackSplittedBuffer(buffer, splittedBuffers[1])
+                              : addBackSplittedBuffer(buffer, splittedBuffers[2]);
   } else {
     // Otherwise, we add buffers for compressors that are not muted.
     for (auto i = 0; i < 3; ++i) {
       if (!compressors[i].isMute()) {
-        addFilterBand(buffer, filterBuffers[i]);
+        addBackSplittedBuffer(buffer, splittedBuffers[i]);
       }
     }
   }
