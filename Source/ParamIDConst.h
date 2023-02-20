@@ -86,4 +86,10 @@ inline std::map<Names, juce::String> &getParams() {
   };
   return params;
 }
+
+inline juce::RangedAudioParameter *getParams(
+    juce::AudioProcessorValueTreeState &apvts, Params::Names name) {
+  auto &params = Params::getParams();
+  return apvts.getParameter(params.at(name));
+}
 }  // namespace Params

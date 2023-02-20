@@ -12,18 +12,14 @@
 
 #include "ParamIDConst.h"
 
-static juce::RangedAudioParameter *getParams(
-    juce::AudioProcessorValueTreeState &apvts, Params::Names name) {
-  auto &params = Params::getParams();
-  return apvts.getParameter(params.at(name));
-}
+using namespace Params;
 
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
     // clang-format off
-    : inGainSlider      {*getParams(apvts, Params::Names::Gain_In), "dB"},
-      lowMidXoverSlider {*getParams(apvts, Params::Names::Low_Mid_Crossover_Freq), "Hz"},
-      midHighXoverSlider{*getParams(apvts, Params::Names::Mid_High_Crossover_Freq), "Hz"},
-      outGainSlider     {*getParams(apvts, Params::Names::Gain_In), "dB"} {
+    : inGainSlider      {*getParams(apvts, Names::Gain_In), "dB", "Input Trim"},
+      lowMidXoverSlider {*getParams(apvts, Names::Low_Mid_Crossover_Freq), "Hz", "Low-Mid X-over"},
+      midHighXoverSlider{*getParams(apvts, Names::Mid_High_Crossover_Freq), "Hz", "Mid-High X-over"},
+      outGainSlider     {*getParams(apvts, Names::Gain_In), "dB", "Output Trim"} {
   // clang-format on
   using namespace Params;
   auto &params = Params::getParams();
