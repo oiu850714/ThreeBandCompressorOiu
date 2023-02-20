@@ -17,6 +17,7 @@ static APVTS::ParameterLayout createParameterLayout() {
 
   using namespace Params;
   const auto& params = Params::getParams();
+  const NormalisableRange<float> gainRange{-24.f, 24.f, 0.5f, 1.f};
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
       releaseRange = attackRange;
   const NormalisableRange<float> lowMidCutRange{20.f, 999.f, 1.f, 0.2f};
@@ -31,6 +32,11 @@ static APVTS::ParameterLayout createParameterLayout() {
     return choicesStr;
   }();
   return {
+      std::make_unique<AudioParameterFloat>(
+          params.at(Names::Gain_In), params.at(Names::Gain_In), gainRange, 0.f),
+      std::make_unique<AudioParameterFloat>(params.at(Names::Gain_Out),
+                                            params.at(Names::Gain_Out),
+                                            gainRange, 0.f),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_Low_Band),
           params.at(Names::Threshold_Low_Band),
@@ -106,6 +112,13 @@ static APVTS::ParameterLayout createParameterLayout() {
   };
 }
 
+static void applyGain(juce::AudioBuffer<float>& buffer,
+                      juce::dsp::Gain<float>& gain) {
+  auto block = juce::dsp::AudioBlock<float>(buffer);
+  auto ctx = juce::dsp::ProcessContextReplacing(block);
+  gain.process(ctx);
+}
+
 //==============================================================================
 ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -133,6 +146,8 @@ ThreeBandCompressorOiuAudioProcessor::ThreeBandCompressorOiuAudioProcessor()
   };
   setParam(lowMidCrossover, Names::Low_Mid_Crossover_Freq);
   setParam(midHighCrossover, Names::Mid_High_Crossover_Freq);
+  setParam(inputGainParam, Names::Gain_In);
+  setParam(outputGainParam, Names::Gain_Out);
 
   LP1.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
   HP1.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
@@ -211,10 +226,14 @@ void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
   AP2.prepare(spec);
   LP2.prepare(spec);
   HP2.prepare(spec);
+  inputGain.prepare(spec);
+  outputGain.prepare(spec);
 
   for (auto& buffer : filterBuffers) {
     buffer.setSize(spec.numChannels, samplesPerBlock);
   }
+  inputGain.setRampDurationSeconds(0.05);
+  outputGain.setRampDurationSeconds(0.05);
 }
 
 void ThreeBandCompressorOiuAudioProcessor::releaseResources() {
@@ -256,6 +275,10 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
 
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
+
+  inputGain.setGainDecibels(inputGainParam->get());
+  outputGain.setGainDecibels(outputGainParam->get());
+  applyGain(buffer, inputGain);
 
   for (auto& filterBuffer : filterBuffers) {
     // Let LinkwitzRileyFilter operate on copied buffer and finally combine the
@@ -327,6 +350,8 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
       }
     }
   }
+
+  applyGain(buffer, outputGain);
 }
 
 //==============================================================================

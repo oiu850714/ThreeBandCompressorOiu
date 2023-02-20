@@ -87,6 +87,10 @@ class ThreeBandCompressorOiuAudioProcessor
 
   std::array<juce::AudioBuffer<float>, 3> filterBuffers;
 
+  juce::dsp::Gain<float> inputGain, outputGain;
+  juce::AudioParameterFloat *inputGainParam{nullptr};
+  juce::AudioParameterFloat *outputGainParam{nullptr};
+
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessor)

@@ -43,6 +43,9 @@ enum Names {
   Solo_Low_Band,
   Solo_Mid_Band,
   Solo_High_Band,
+
+  Gain_In,
+  Gain_Out,
 };
 
 inline std::map<Names, juce::String> &getParams() {
@@ -77,6 +80,9 @@ inline std::map<Names, juce::String> &getParams() {
       {Solo_Low_Band, "Solo Low Band"},
       {Solo_Mid_Band, "Solo Mid Band"},
       {Solo_High_Band, "Solo High Band"},
+
+      {Gain_In, "Gain In"},
+      {Gain_Out, "Gain Out"},
   };
   return params;
 }
