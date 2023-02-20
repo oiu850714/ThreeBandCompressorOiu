@@ -5,6 +5,9 @@
               jucerFormatVersion="1" projectLineFeed="&#10;">
   <MAINGROUP id="Sgu6M2" name="ThreeBandCompressorOiu">
     <GROUP id="{DFDE9391-D014-11E2-E7EF-DFA10FD37929}" name="Source">
+      <FILE id="y6vnil" name="CustomSlider.cpp" compile="1" resource="0"
+            file="Source/CustomSlider.cpp"/>
+      <FILE id="QU1jZA" name="CustomSlider.h" compile="0" resource="0" file="Source/CustomSlider.h"/>
       <FILE id="jibQS2" name="ParamIDConst.h" compile="0" resource="0" file="Source/ParamIDConst.h"/>
       <FILE id="a4n79d" name="CompressorBand.cpp" compile="1" resource="0"
             file="Source/CompressorBand.cpp"/>

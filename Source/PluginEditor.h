@@ -12,6 +12,7 @@
 
 #include "PluginProcessor.h"
 #include "GlobalControlsComponent.h"
+#include "CustomSlider.h"
 
 //==============================================================================
 /**
