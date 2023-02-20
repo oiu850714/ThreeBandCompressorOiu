@@ -31,6 +31,15 @@ class ThreeBandCompressorOiuAudioProcessorEditor
   // access the processor object that created it.
   ThreeBandCompressorOiuAudioProcessor& audioProcessor;
 
+  struct Placeholder : public juce::Component {
+    Placeholder();
+    void paint(juce::Graphics& g) override { g.fillAll(customColor); }
+
+    juce::Colour customColor;
+  };
+
+  Placeholder controlBar, analyzer, globalControls, bandControls;
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessorEditor)
 };

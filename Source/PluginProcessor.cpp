@@ -373,8 +373,7 @@ bool ThreeBandCompressorOiuAudioProcessor::hasEditor() const {
 
 juce::AudioProcessorEditor*
 ThreeBandCompressorOiuAudioProcessor::createEditor() {
-  return new juce::GenericAudioProcessorEditor(*this);
-  // return new ThreeBandCompressorOiuAudioProcessorEditor (*this);
+  return new ThreeBandCompressorOiuAudioProcessorEditor (*this);
 }
 
 //==============================================================================
