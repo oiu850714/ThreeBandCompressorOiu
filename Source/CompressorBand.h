@@ -29,6 +29,10 @@ class CompressorBand {
 
   void process(juce::AudioBuffer<float> &buffer);
 
+  bool isSolo() const { return solo->get(); }
+  bool isMute() const { return mute->get(); }
+  bool isBypassed() const { return bypassed->get(); }
+
  private:
   // Cached pointers for the parameters of apvts.
   juce::AudioParameterFloat *attack{nullptr};
@@ -36,6 +40,8 @@ class CompressorBand {
   juce::AudioParameterFloat *threshold{nullptr};
   juce::AudioParameterChoice *ratio{nullptr};
   juce::AudioParameterBool *bypassed{nullptr};
+  juce::AudioParameterBool *mute{nullptr};
+  juce::AudioParameterBool *solo{nullptr};
 
   //==============================================================================
   juce::dsp::Compressor<float> compressor;

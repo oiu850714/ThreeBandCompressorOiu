@@ -27,6 +27,8 @@ CompressorBand::CompressorBand(const juce::AudioProcessorValueTreeState &apvts,
       setParam(threshold, Names::Threshold_Low_Band);
       setParam(ratio, Names::Ratio_Low_Band);
       setParam(bypassed, Names::Bypassed_Low_Band);
+      setParam(mute, Names::Mute_Low_Band);
+      setParam(solo, Names::Solo_Low_Band);
     } break;
     case CompressorBandType::Mid: {
       setParam(attack, Names::Attack_Mid_Band);
@@ -34,6 +36,8 @@ CompressorBand::CompressorBand(const juce::AudioProcessorValueTreeState &apvts,
       setParam(threshold, Names::Threshold_Mid_Band);
       setParam(ratio, Names::Ratio_Mid_Band);
       setParam(bypassed, Names::Bypassed_Mid_Band);
+      setParam(mute, Names::Mute_Mid_Band);
+      setParam(solo, Names::Solo_Mid_Band);
     } break;
     case CompressorBandType::High: {
       setParam(attack, Names::Attack_High_Band);
@@ -41,6 +45,8 @@ CompressorBand::CompressorBand(const juce::AudioProcessorValueTreeState &apvts,
       setParam(threshold, Names::Threshold_High_Band);
       setParam(ratio, Names::Ratio_High_Band);
       setParam(bypassed, Names::Bypassed_High_Band);
+      setParam(mute, Names::Mute_High_Band);
+      setParam(solo, Names::Solo_High_Band);
     } break;
   }
 }

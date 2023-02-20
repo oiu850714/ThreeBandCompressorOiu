@@ -47,6 +47,12 @@ static APVTS::ParameterLayout createParameterLayout() {
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Low_Band),
                                            params.at(Names::Bypassed_Low_Band),
                                            false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Mute_Low_Band),
+                                           params.at(Names::Mute_Low_Band),
+                                           false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Solo_Low_Band),
+                                           params.at(Names::Solo_Low_Band),
+                                           false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_Mid_Band),
           params.at(Names::Threshold_Mid_Band),
@@ -63,6 +69,12 @@ static APVTS::ParameterLayout createParameterLayout() {
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Mid_Band),
                                            params.at(Names::Bypassed_Mid_Band),
                                            false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Mute_Mid_Band),
+                                           params.at(Names::Mute_Mid_Band),
+                                           false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Solo_Mid_Band),
+                                           params.at(Names::Solo_Mid_Band),
+                                           false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Threshold_High_Band),
           params.at(Names::Threshold_High_Band),
@@ -78,6 +90,12 @@ static APVTS::ParameterLayout createParameterLayout() {
                                              ratioChoices, 3),
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_High_Band),
                                            params.at(Names::Bypassed_High_Band),
+                                           false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Mute_High_Band),
+                                           params.at(Names::Mute_High_Band),
+                                           false),
+      std::make_unique<AudioParameterBool>(params.at(Names::Solo_High_Band),
+                                           params.at(Names::Solo_High_Band),
                                            false),
       std::make_unique<AudioParameterFloat>(
           params.at(Names::Low_Mid_Crossover_Freq),
@@ -294,11 +312,21 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
     }
   };
 
-  addFilterBand(buffer, filterBuffers[0]);
-  addFilterBand(buffer, filterBuffers[1]);
-  addFilterBand(buffer, filterBuffers[2]);
-
-
+  if (compressors[0].isSolo() || compressors[1].isSolo() ||
+      compressors[2].isSolo()) {
+    // If any of compressor is in solo, then we add the corresponding buffer only.
+    // (But we prefer compressor with smaller index if multiple compressors are in solo.)
+    compressors[0].isSolo()   ? addFilterBand(buffer, filterBuffers[0])
+    : compressors[1].isSolo() ? addFilterBand(buffer, filterBuffers[1])
+                              : addFilterBand(buffer, filterBuffers[2]);
+  } else {
+    // Otherwise, we add buffers for compressors that are not muted.
+    for (auto i = 0; i < 3; ++i) {
+      if (!compressors[i].isMute()) {
+        addFilterBand(buffer, filterBuffers[i]);
+      }
+    }
+  }
 }
 
 //==============================================================================
