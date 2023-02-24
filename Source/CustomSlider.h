@@ -49,11 +49,6 @@ struct RotarySliderWithLabels : juce::Slider {
         param(rap),
         suffix(unitSuffix) {
     setName(title);
-
-    // Set min and max labels.
-    if (param != nullptr) {
-      addMinMaxLabels();
-    }
   }
 
   struct LabelPos {
@@ -70,20 +65,17 @@ struct RotarySliderWithLabels : juce::Slider {
   juce::String getDisplayString() const;
 
   void changeParam(juce::RangedAudioParameter *newParam);
-  const juce::RangedAudioParameter *getParam() const noexcept {
-    return param;
-  }
+  const juce::RangedAudioParameter *getParam() const noexcept { return param; }
 
- private:
-  juce::RangedAudioParameter *param;
-  juce::String suffix;
-
-  void addMinMaxLabels() {
+  void setMinMaxLabels() {
     auto minVal = param->getNormalisableRange().start,
          maxVal = param->getNormalisableRange().end;
     labels.add({0.f, unitValueTruncatedOver1K(minVal, getSuffix())});
     labels.add({1.f, unitValueTruncatedOver1K(maxVal, getSuffix())});
   }
+ private:
+  juce::RangedAudioParameter *param{nullptr};
+  juce::String suffix;
 };
 
 struct PowerButton : juce::ToggleButton {};

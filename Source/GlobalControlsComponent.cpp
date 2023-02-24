@@ -25,6 +25,11 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
   using namespace Params;
   auto &params = Params::getParams();
 
+  inGainSlider.setMinMaxLabels();
+  lowMidXoverSlider.setMinMaxLabels();
+  midHighXoverSlider.setMinMaxLabels();
+  outGainSlider.setMinMaxLabels();
+
   auto makeAttachment = [&params, &apvts](auto &slider, auto param) {
     return std::make_unique<Attachment>(apvts, params.at(param), slider);
   };

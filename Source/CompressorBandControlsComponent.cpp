@@ -16,36 +16,14 @@
 using namespace Params;
 
 CompressorBandControls::CompressorBandControls(
-    juce::AudioProcessorValueTreeState &apvts)
+    juce::AudioProcessorValueTreeState &apv)
     // clang-format off
-  : attackSlider    {getParams(apvts, Names::Attack_Mid_Band), "ms", "Attack"},
-    releaseSlider   {getParams(apvts, Names::Release_Mid_Band), "ms", "Release"},
-    thresholdSlider {getParams(apvts, Names::Threshold_Mid_Band), "dB", "Threshold"},
-    ratioSlider     {getParams(apvts, Names::Ratio_Mid_Band), "", "Ratio"} {
+  : apvts(apv),
+    attackSlider    {nullptr, "ms", "Attack"},
+    releaseSlider   {nullptr, "ms", "Release"},
+    thresholdSlider {nullptr, "dB", "Threshold"},
+    ratioSlider     {nullptr, "", "Ratio"} {
   // clang-format on
-
-  auto &params = getParams();
-  auto makeAttachment = [&params, &apvts](auto &attachment, auto &slider,
-                                          auto param) {
-    attachment =
-        std::make_unique<std::remove_reference_t<decltype(*attachment)>>(
-            apvts, params.at(param), slider);
-  };
-
-  // clang-format off
-  makeAttachment(attackSliderAttachment, attackSlider, Names::Attack_Mid_Band);
-  makeAttachment(releaseSliderAttachment, releaseSlider, Names::Release_Mid_Band);
-  makeAttachment(thresholdSliderAttachment, thresholdSlider, Names::Threshold_Mid_Band);
-  makeAttachment(ratioSliderAttachment, ratioSlider, Names::Ratio_Mid_Band);
-
-  makeAttachment(bypassBtnAttachment, bypassBtn, Names::Bypassed_Mid_Band);
-  makeAttachment(muteBtnAttachment, muteBtn, Names::Mute_Mid_Band);
-  makeAttachment(soloBtnAttachment, soloBtn, Names::Solo_Mid_Band);
-  // clang-format on
-
-  // XXX ratio slider's min and max unit need to use special values.
-  // TODO: make ration slider a derived custom slider.
-  setRatioMinMaxLabels();
 
   addAndMakeVisible(attackSlider);
   addAndMakeVisible(releaseSlider);
@@ -68,14 +46,14 @@ CompressorBandControls::CompressorBandControls(
 
   auto btnSwitch = [safePtr = this->safePtr] {
     if (safePtr) {
-      safePtr->updateAttachments();
+      safePtr->updateParamSelection();
     }
   };
   lowBand.onClick = midBand.onClick = highBand.onClick = btnSwitch;
 
   // Select low band by default.
   lowBand.setToggleState(true, juce::NotificationType::dontSendNotification);
-  updateAttachments();
+  updateParamSelection();
 
   addAndMakeVisible(lowBand);
   addAndMakeVisible(midBand);
@@ -89,13 +67,104 @@ void CompressorBandControls::paint(juce::Graphics &g) {
 void CompressorBandControls::setRatioMinMaxLabels() {
   ratioSlider.labels.clear();
   ratioSlider.labels.add({0.f, "1:1"});
-  auto ratioParam = static_cast<const juce::AudioParameterChoice*>(ratioSlider.getParam());
+  auto ratioParam =
+      static_cast<const juce::AudioParameterChoice *>(ratioSlider.getParam());
   auto maxRatio = (ratioParam->choices.end() - 1)->getIntValue();
   ratioSlider.labels.add({1.f, juce::String(maxRatio) + ":1"});
 }
 
-void CompressorBandControls::updateAttachments() {
+void CompressorBandControls::updateParamSelection() {
   // TODO
+  auto updateAttachment = [&params = getParams(), &apvts = this->apvts](
+                            auto &attachment, auto &slider, auto param) {
+    // XXX: in theory, we can skip the reset() step.
+    //      But that does NOT work (if we really skip reset()) and will make the
+    //      old attached parameter to be reset. 
+    // Refer to: https://youtu.be/Mo0Oco3Vimo?t=19085
+    attachment.reset();
+    attachment =
+        std::make_unique<std::remove_reference_t<decltype(*attachment)>>(
+            apvts, params.at(param), slider);
+  };
+
+  auto updateSlidersParam = [this](auto attack, auto release, auto threshold,
+                                   auto ratio) {
+    attackSlider.changeParam(getParams(apvts, attack));
+    releaseSlider.changeParam(getParams(apvts, release));
+    thresholdSlider.changeParam(getParams(apvts, threshold));
+    ratioSlider.changeParam(getParams(apvts, ratio));
+  };
+
+  auto updateAttachments =
+      [this, updateAttachment](auto attack, auto release, auto threshold,
+                             auto ratio, auto bypassed, auto mute, auto solo) {
+        // clang-format off
+        updateAttachment(attackSliderAttachment, attackSlider, attack);
+        updateAttachment(releaseSliderAttachment, releaseSlider, release);
+        updateAttachment(thresholdSliderAttachment, thresholdSlider, threshold);
+        updateAttachment(ratioSliderAttachment, ratioSlider, ratio);
+
+        updateAttachment(bypassBtnAttachment, bypassBtn, bypassed);
+        updateAttachment(muteBtnAttachment, muteBtn, mute);
+        updateAttachment(soloBtnAttachment, soloBtn, solo);
+        // clang-format on
+
+        // XXX ratio slider's min and max unit need to use special values.
+        // TODO: make ration slider a derived custom slider.
+        setRatioMinMaxLabels();
+      };
+
+  enum class BandType { Low, Mid, High };
+
+  auto bandType = lowBand.getToggleState()   ? BandType::Low
+                  : midBand.getToggleState() ? BandType::Mid
+                                             : BandType::High;
+  // clang-format off
+  switch (bandType) {
+    case BandType::Low: {
+      updateSlidersParam(Names::Attack_Low_Band,
+                         Names::Release_Low_Band,
+                         Names::Threshold_Low_Band,
+                         Names::Ratio_Low_Band);
+      updateAttachments(Names::Attack_Low_Band,
+                        Names::Release_Low_Band,
+                        Names::Threshold_Low_Band,
+                        Names::Ratio_Low_Band,
+                        Names::Bypassed_Low_Band,
+                        Names::Mute_Low_Band,
+                        Names::Solo_Low_Band);
+      break;
+    }
+    case BandType::Mid: {
+      updateSlidersParam(Names::Attack_Mid_Band,
+                         Names::Release_Mid_Band,
+                         Names::Threshold_Mid_Band,
+                         Names::Ratio_Mid_Band);
+      updateAttachments(Names::Attack_Mid_Band,
+                        Names::Release_Mid_Band,
+                        Names::Threshold_Mid_Band,
+                        Names::Ratio_Mid_Band,
+                        Names::Bypassed_Mid_Band,
+                        Names::Mute_Mid_Band,
+                        Names::Solo_Mid_Band);
+      break;
+    }
+    case BandType::High: {
+      updateSlidersParam(Names::Attack_High_Band,
+                         Names::Release_High_Band,
+                         Names::Threshold_High_Band,
+                         Names::Ratio_High_Band);
+      updateAttachments(Names::Attack_High_Band,
+                        Names::Release_High_Band,
+                        Names::Threshold_High_Band,
+                        Names::Ratio_High_Band,
+                        Names::Bypassed_High_Band,
+                        Names::Mute_High_Band,
+                        Names::Solo_High_Band);
+      break;
+    }
+  }
+  // clang-format on
 }
 
 void CompressorBandControls::resized() {

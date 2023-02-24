@@ -205,5 +205,8 @@ juce::String RotarySliderWithLabels::getDisplayString() const {
 void RotarySliderWithLabels::changeParam(
     juce::RangedAudioParameter* newParam) {
   param = newParam;
+  if (param) {
+    setMinMaxLabels();
+  }
   repaint();
 }

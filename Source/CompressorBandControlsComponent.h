@@ -15,10 +15,11 @@
 
 class CompressorBandControls : public juce::Component {
  public:
-  CompressorBandControls(juce::AudioProcessorValueTreeState &apvts);
+  CompressorBandControls(juce::AudioProcessorValueTreeState &apv);
   void resized() override;
   void paint(juce::Graphics &g) override;
  private:
+  juce::AudioProcessorValueTreeState &apvts;
   RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider, ratioSlider;
   juce::ToggleButton bypassBtn, soloBtn, muteBtn;
   juce::ToggleButton lowBand, midBand, highBand;
@@ -39,5 +40,5 @@ class CompressorBandControls : public juce::Component {
   // TBH I have no idea when this component may be invalid.
   juce::Component::SafePointer<CompressorBandControls> safePtr {this};
 
-  void updateAttachments();
+  void updateParamSelection();
 };
