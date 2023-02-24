@@ -58,6 +58,16 @@ CompressorBandControls::CompressorBandControls(
   addAndMakeVisible(bypassBtn);
   addAndMakeVisible(muteBtn);
   addAndMakeVisible(soloBtn);
+
+  lowBand.setName("Low");
+  midBand.setName("Mid");
+  highBand.setName("High");
+  lowBand.setRadioGroupId(1);
+  midBand.setRadioGroupId(1);
+  highBand.setRadioGroupId(1);
+  addAndMakeVisible(lowBand);
+  addAndMakeVisible(midBand);
+  addAndMakeVisible(highBand);
 }
 
 void CompressorBandControls::paint(juce::Graphics &g) {
@@ -91,10 +101,13 @@ void CompressorBandControls::resized() {
   };
 
   auto boxForStateBtns = createBandBtnCtrlBox({&bypassBtn, &soloBtn, &muteBtn});
+  auto boxForBandSelectionBtns = createBandBtnCtrlBox({&highBand, &midBand, &lowBand});
+
   FlexBox flexBox;
   flexBox.flexDirection = FlexBox::Direction::row;
   flexBox.flexWrap = FlexBox::Wrap::noWrap;
 
+  flexBox.items.add(FlexItem(boxForBandSelectionBtns).withFlex(0.3f));
   flexBox.items.add(FlexItem(attackSlider).withFlex(1.0f));
   flexBox.items.add(FlexItem(releaseSlider).withFlex(1.0f));
   flexBox.items.add(FlexItem(thresholdSlider).withFlex(1.0f));

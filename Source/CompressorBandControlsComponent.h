@@ -21,9 +21,11 @@ class CompressorBandControls : public juce::Component {
  private:
   RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider, ratioSlider;
   juce::ToggleButton bypassBtn, soloBtn, muteBtn;
+  juce::ToggleButton lowBand, midBand, highBand;
 
-  using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+
   // Dynamic allocating attachments for the sake of constructor clarity...
+  using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
   std::unique_ptr<Attachment> attackSliderAttachment,
                               releaseSliderAttachment,
                               thresholdSliderAttachment,
