@@ -20,7 +20,8 @@ class CompressorBandControls : public juce::Component {
   void paint(juce::Graphics &g) override;
  private:
   juce::AudioProcessorValueTreeState &apvts;
-  RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider, ratioSlider;
+  RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider;
+  RotaryRatioSlider ratioSlider;
   juce::ToggleButton bypassBtn, soloBtn, muteBtn;
   juce::ToggleButton lowBand, midBand, highBand;
 

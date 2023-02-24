@@ -62,20 +62,32 @@ struct RotarySliderWithLabels : juce::Slider {
   juce::Rectangle<int> getSliderBounds() const;
   int getTextHeight() const { return 14; }
   juce::String getSuffix() const { return suffix; }
-  juce::String getDisplayString() const;
+  virtual juce::String getDisplayString() const;
 
   void changeParam(juce::RangedAudioParameter *newParam);
   const juce::RangedAudioParameter *getParam() const noexcept { return param; }
 
-  void setMinMaxLabels() {
+  virtual void setMinMaxLabels() {
+    labels.clear();
     auto minVal = param->getNormalisableRange().start,
          maxVal = param->getNormalisableRange().end;
     labels.add({0.f, unitValueTruncatedOver1K(minVal, getSuffix())});
     labels.add({1.f, unitValueTruncatedOver1K(maxVal, getSuffix())});
   }
+
  private:
   juce::RangedAudioParameter *param{nullptr};
   juce::String suffix;
+};
+
+class RotaryRatioSlider : public RotarySliderWithLabels {
+ public:
+  RotaryRatioSlider(juce::RangedAudioParameter *rap)
+      : RotarySliderWithLabels(rap, "", "Ratio") {}
+  juce::String getDisplayString() const override;
+
+ private:
+  void setMinMaxLabels() override;
 };
 
 struct PowerButton : juce::ToggleButton {};

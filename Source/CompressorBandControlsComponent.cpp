@@ -22,7 +22,7 @@ CompressorBandControls::CompressorBandControls(
     attackSlider    {nullptr, "ms", "Attack"},
     releaseSlider   {nullptr, "ms", "Release"},
     thresholdSlider {nullptr, "dB", "Threshold"},
-    ratioSlider     {nullptr, "", "Ratio"} {
+    ratioSlider     {nullptr} {
   // clang-format on
 
   addAndMakeVisible(attackSlider);
@@ -108,10 +108,6 @@ void CompressorBandControls::updateParamSelection() {
         updateAttachment(muteBtnAttachment, muteBtn, mute);
         updateAttachment(soloBtnAttachment, soloBtn, solo);
         // clang-format on
-
-        // XXX ratio slider's min and max unit need to use special values.
-        // TODO: make ration slider a derived custom slider.
-        setRatioMinMaxLabels();
       };
 
   enum class BandType { Low, Mid, High };

@@ -210,3 +210,20 @@ void RotarySliderWithLabels::changeParam(
   }
   repaint();
 }
+
+juce::String RotaryRatioSlider::getDisplayString() const {
+  auto* choiceParam = dynamic_cast<const juce::AudioParameterChoice*>(getParam());
+  jassert(choiceParam != nullptr);
+
+  auto currentChoice = choiceParam->getCurrentChoiceName();
+  return juce::String(currentChoice.getIntValue()) + ":1";
+}
+
+void RotaryRatioSlider::setMinMaxLabels() {
+  labels.clear();
+  labels.add({0.f, "1:1"});
+  auto ratioParam =
+      static_cast<const juce::AudioParameterChoice *>(getParam());
+  auto maxRatio = (ratioParam->choices.end() - 1)->getIntValue();
+  labels.add({1.f, juce::String(maxRatio) + ":1"});
+}
