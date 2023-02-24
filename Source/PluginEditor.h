@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 
 #include "PluginProcessor.h"
+#include "CompressorBandControlsComponent.h"
 #include "GlobalControlsComponent.h"
 #include "CustomSlider.h"
 
@@ -40,8 +41,11 @@ class ThreeBandCompressorOiuAudioProcessorEditor
     juce::Colour customColor;
   };
 
+  CustomLookAndFeel lnf;
+
   GlobalControls globalControls {audioProcessor.apvts};
-  Placeholder controlBar, analyzer, bandControls;
+  CompressorBandControls bandControls {audioProcessor.apvts};
+  Placeholder controlBar, analyzer;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessorEditor)

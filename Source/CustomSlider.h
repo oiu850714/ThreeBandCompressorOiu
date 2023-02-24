@@ -12,7 +12,15 @@
 
 #include <JuceHeader.h>
 
-struct LookAndFeel : juce::LookAndFeel_V4 {
+// Dummy class for the sake of prototyping.
+class RotarySlider : public juce::Slider {
+ public:
+  RotarySlider()
+      : juce::Slider(juce::Slider::RotaryHorizontalVerticalDrag,
+                     juce::Slider::NoTextBox) {}
+};
+
+struct CustomLookAndFeel : juce::LookAndFeel_V4 {
   void drawRotarySlider(juce::Graphics &, int x, int y, int width, int height,
                         float sliderPosProportional, float rotaryStartAngle,
                         float rotaryEndAngle, juce::Slider &) override;
@@ -33,18 +41,20 @@ juce::String unitValueTruncatedOver1K(T val, const juce::String &suffix) {
 }
 
 struct RotarySliderWithLabels : juce::Slider {
-  RotarySliderWithLabels(juce::RangedAudioParameter &rap,
+  RotarySliderWithLabels(juce::RangedAudioParameter *rap,
                          const juce::String &unitSuffix,
                          const juce::String &title)
       : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
                      juce::Slider::TextEntryBoxPosition::NoTextBox),
-        param(&rap),
+        param(rap),
         suffix(unitSuffix) {
     setName(title);
-    setLookAndFeel(&lnf);
-  }
 
-  ~RotarySliderWithLabels() { setLookAndFeel(nullptr); }
+    // Set min and max labels.
+    if (param != nullptr) {
+      addMinMaxLabels();
+    }
+  }
 
   struct LabelPos {
     float pos;
@@ -59,11 +69,21 @@ struct RotarySliderWithLabels : juce::Slider {
   juce::String getSuffix() const { return suffix; }
   juce::String getDisplayString() const;
 
- private:
-  LookAndFeel lnf;
+  void changeParam(juce::RangedAudioParameter *newParam);
+  const juce::RangedAudioParameter *getParam() const noexcept {
+    return param;
+  }
 
+ private:
   juce::RangedAudioParameter *param;
   juce::String suffix;
+
+  void addMinMaxLabels() {
+    auto minVal = param->getNormalisableRange().start,
+         maxVal = param->getNormalisableRange().end;
+    labels.add({0.f, unitValueTruncatedOver1K(minVal, getSuffix())});
+    labels.add({1.f, unitValueTruncatedOver1K(maxVal, getSuffix())});
+  }
 };
 
 struct PowerButton : juce::ToggleButton {};

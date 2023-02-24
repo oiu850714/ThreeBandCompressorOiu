@@ -12,7 +12,7 @@
 
 #include "CustomSlider.h"
 
-void LookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
+void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
                                    int height, float sliderPosProportional,
                                    float rotaryStartAngle, float rotaryEndAngle,
                                    juce::Slider& slider) {
@@ -65,7 +65,7 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
   }
 }
 
-void LookAndFeel::drawToggleButton(juce::Graphics& g,
+void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                    juce::ToggleButton& toggleButton,
                                    bool shouldDrawButtonAsHighlighted,
                                    bool shouldDrawButtonAsDown) {
@@ -187,4 +187,10 @@ juce::String RotarySliderWithLabels::getDisplayString() const {
   } else {
     jassertfalse;  // this shouldn't happen!
   }
+}
+
+void RotarySliderWithLabels::changeParam(
+    juce::RangedAudioParameter* newParam) {
+  param = newParam;
+  repaint();
 }

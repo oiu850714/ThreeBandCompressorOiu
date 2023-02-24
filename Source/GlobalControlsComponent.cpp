@@ -10,16 +10,17 @@
 
 #include "GlobalControlsComponent.h"
 
+#include "ComponentDrawingUtils.h"
 #include "ParamIDConst.h"
 
 using namespace Params;
 
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
     // clang-format off
-    : inGainSlider      {*getParams(apvts, Names::Gain_In), "dB", "Input Trim"},
-      lowMidXoverSlider {*getParams(apvts, Names::Low_Mid_Crossover_Freq), "Hz", "Low-Mid X-over"},
-      midHighXoverSlider{*getParams(apvts, Names::Mid_High_Crossover_Freq), "Hz", "Mid-High X-over"},
-      outGainSlider     {*getParams(apvts, Names::Gain_In), "dB", "Output Trim"} {
+    : inGainSlider      {getParams(apvts, Names::Gain_In), "dB", "Input Trim"},
+      lowMidXoverSlider {getParams(apvts, Names::Low_Mid_Crossover_Freq), "Hz", "Low-Mid X-over"},
+      midHighXoverSlider{getParams(apvts, Names::Mid_High_Crossover_Freq), "Hz", "Mid-High X-over"},
+      outGainSlider     {getParams(apvts, Names::Gain_In), "dB", "Output Trim"} {
   // clang-format on
   using namespace Params;
   auto &params = Params::getParams();
@@ -35,8 +36,6 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
       makeAttachment(midHighXoverSlider, Names::Mid_High_Crossover_Freq);
   outGainSliderAttachment = makeAttachment(outGainSlider, Names::Gain_Out);
 
-  addSlidersMinMaxLabels(apvts);
-
   addAndMakeVisible(inGainSlider);
   addAndMakeVisible(lowMidXoverSlider);
   addAndMakeVisible(midHighXoverSlider);
@@ -44,17 +43,7 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
 }
 
 void GlobalControls::paint(juce::Graphics &g) {
-  using namespace juce;
-
-  // border
-  auto bounds = getLocalBounds();
-  const auto localbounds = bounds;
-  g.setColour(Colours::blueviolet);
-  g.fillAll();
-
-  bounds.reduce(3, 3);
-  g.setColour(Colours::black);
-  g.fillRoundedRectangle(bounds.toFloat(), 3);
+  drawModuleBackground(g, getLocalBounds());
 }
 
 void GlobalControls::resized() {
@@ -73,18 +62,3 @@ void GlobalControls::resized() {
   flexBox.performLayout(bounds);
 }
 
-void GlobalControls::addSlidersMinMaxLabels(juce::AudioProcessorValueTreeState &apvts) {
-  auto addMinMaxLabel = [&params = Params::getParams(), &apvts = apvts] (auto &slider, auto name) {
-    auto paramName = params.at(name);
-    auto param = apvts.getParameter(paramName);
-    auto minVal = param->getNormalisableRange().start, maxVal = param->getNormalisableRange().end;
-    slider.labels.add({0.f, unitValueTruncatedOver1K(minVal, slider.getSuffix())});
-    slider.labels.add({1.f, unitValueTruncatedOver1K(maxVal, slider.getSuffix())});
-  };
-
-  using namespace Params;
-  addMinMaxLabel(inGainSlider, Names::Gain_In);
-  addMinMaxLabel(lowMidXoverSlider, Params::Names::Low_Mid_Crossover_Freq);
-  addMinMaxLabel(midHighXoverSlider, Params::Names::Mid_High_Crossover_Freq);
-  addMinMaxLabel(outGainSlider, Params::Names::Gain_Out);
-}

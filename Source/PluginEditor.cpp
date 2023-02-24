@@ -15,6 +15,7 @@ ThreeBandCompressorOiuAudioProcessorEditor::
     ThreeBandCompressorOiuAudioProcessorEditor(
         ThreeBandCompressorOiuAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p) {
+  setLookAndFeel(&lnf);
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(600, 500);
@@ -26,7 +27,9 @@ ThreeBandCompressorOiuAudioProcessorEditor::
 }
 
 ThreeBandCompressorOiuAudioProcessorEditor::
-    ~ThreeBandCompressorOiuAudioProcessorEditor() {}
+    ~ThreeBandCompressorOiuAudioProcessorEditor() {
+  setLookAndFeel(nullptr);
+}
 
 //==============================================================================
 void ThreeBandCompressorOiuAudioProcessorEditor::paint(juce::Graphics& g) {

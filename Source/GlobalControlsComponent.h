@@ -20,13 +20,6 @@ class GlobalControls : public juce::Component {
   void resized() override;
 
  private:
-  class RotarySlider : public juce::Slider {
-   public:
-    RotarySlider()
-        : juce::Slider(juce::Slider::RotaryHorizontalVerticalDrag,
-                       juce::Slider::NoTextBox) {}
-  };
-
   // clang-format off
   using RSWL = RotarySliderWithLabels;
   RSWL inGainSlider, lowMidXoverSlider, midHighXoverSlider, outGainSlider;
@@ -38,5 +31,4 @@ class GlobalControls : public juce::Component {
                               midHighXoverSliderAttachment,
                               outGainSliderAttachment;
   // clang-format on
-  void addSlidersMinMaxLabels(juce::AudioProcessorValueTreeState &apvts);
 };
