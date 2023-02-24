@@ -30,6 +30,11 @@ CompressorBandControls::CompressorBandControls(
   addAndMakeVisible(thresholdSlider);
   addAndMakeVisible(ratioSlider);
 
+  // Set Listener
+  bypassBtn.addListener(this);
+  soloBtn.addListener(this);
+  muteBtn.addListener(this);
+
   bypassBtn.setName("X");
   soloBtn.setName("S");
   muteBtn.setName("M");
@@ -60,8 +65,50 @@ CompressorBandControls::CompressorBandControls(
   addAndMakeVisible(highBand);
 }
 
+CompressorBandControls::~CompressorBandControls() {
+  bypassBtn.removeListener(this);
+  muteBtn.removeListener(this);
+  soloBtn.removeListener(this);
+}
+
 void CompressorBandControls::paint(juce::Graphics &g) {
   drawModuleBackground(g, getLocalBounds());
+}
+
+void CompressorBandControls::buttonClicked(juce::Button *button) {
+  updateSliderEnablements();
+  updateToggleStates(*button);
+}
+void CompressorBandControls::updateSliderEnablements() {
+  auto disabled = muteBtn.getToggleState() || bypassBtn.getToggleState();
+  attackSlider.setEnabled(!disabled);
+  releaseSlider.setEnabled(!disabled);
+  thresholdSlider.setEnabled(!disabled);
+  ratioSlider.setEnabled(!disabled);
+}
+
+void CompressorBandControls::updateToggleStates(juce::Button &clickedButton) {
+  // If you toggle a button off, don't do anything.
+  if (!clickedButton.getToggleState()) {
+    return;
+  }
+  using namespace juce;
+
+  // If solo button is toggled, then toggle mute and bypass buttons off.
+  if (&clickedButton == &soloBtn) {
+    muteBtn.setToggleState(false, NotificationType::sendNotification);
+    bypassBtn.setToggleState(false, NotificationType::sendNotification);
+  }
+  // If mute button is toggled, then toggle solo and bypass buttons off.
+  if (&clickedButton == &muteBtn) {
+    soloBtn.setToggleState(false, NotificationType::sendNotification);
+    bypassBtn.setToggleState(false, NotificationType::sendNotification);
+  }
+  // If bypass button is toggled, then toggle solo and mute buttons off.
+  if (&clickedButton == &bypassBtn) {
+    muteBtn.setToggleState(false, NotificationType::sendNotification);
+    soloBtn.setToggleState(false, NotificationType::sendNotification);
+  }
 }
 
 void CompressorBandControls::setRatioMinMaxLabels() {

@@ -13,11 +13,16 @@
 
 #include "CustomSlider.h"
 
-class CompressorBandControls : public juce::Component {
+class CompressorBandControls : public juce::Component,
+                               private juce::Button::Listener {
  public:
   CompressorBandControls(juce::AudioProcessorValueTreeState &apv);
+  ~CompressorBandControls() override;
   void resized() override;
   void paint(juce::Graphics &g) override;
+
+  void buttonClicked(juce::Button *button) override;
+
  private:
   juce::AudioProcessorValueTreeState &apvts;
   RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider;
@@ -25,21 +30,22 @@ class CompressorBandControls : public juce::Component {
   juce::ToggleButton bypassBtn, soloBtn, muteBtn;
   juce::ToggleButton lowBand, midBand, highBand;
 
-
   // Dynamic allocating attachments for the sake of constructor clarity...
   using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-  std::unique_ptr<Attachment> attackSliderAttachment,
-                              releaseSliderAttachment,
-                              thresholdSliderAttachment,
-                              ratioSliderAttachment;
+  std::unique_ptr<Attachment> attackSliderAttachment, releaseSliderAttachment,
+      thresholdSliderAttachment, ratioSliderAttachment;
   using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
-  std::unique_ptr<BtnAttachment> bypassBtnAttachment,
-                                 muteBtnAttachment,
-                                 soloBtnAttachment;
+  std::unique_ptr<BtnAttachment> bypassBtnAttachment, muteBtnAttachment,
+      soloBtnAttachment;
   void setRatioMinMaxLabels();
 
   // TBH I have no idea when this component may be invalid.
-  juce::Component::SafePointer<CompressorBandControls> safePtr {this};
+  juce::Component::SafePointer<CompressorBandControls> safePtr{this};
 
   void updateParamSelection();
+
+  // Disable setting sliders if mute or bypass buttons are toggled.
+  void updateSliderEnablements();
+  // Update toggle states according to some rules described in source files.
+  void updateToggleStates(juce::Button &clickedButton);
 };
