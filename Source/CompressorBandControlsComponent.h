@@ -35,4 +35,9 @@ class CompressorBandControls : public juce::Component {
                                  muteBtnAttachment,
                                  soloBtnAttachment;
   void setRatioMinMaxLabels();
+
+  // TBH I have no idea when this component may be invalid.
+  juce::Component::SafePointer<CompressorBandControls> safePtr {this};
+
+  void updateAttachments();
 };

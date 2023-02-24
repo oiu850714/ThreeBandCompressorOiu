@@ -65,6 +65,18 @@ CompressorBandControls::CompressorBandControls(
   lowBand.setRadioGroupId(1);
   midBand.setRadioGroupId(1);
   highBand.setRadioGroupId(1);
+
+  auto btnSwitch = [safePtr = this->safePtr] {
+    if (safePtr) {
+      safePtr->updateAttachments();
+    }
+  };
+  lowBand.onClick = midBand.onClick = highBand.onClick = btnSwitch;
+
+  // Select low band by default.
+  lowBand.setToggleState(true, juce::NotificationType::dontSendNotification);
+  updateAttachments();
+
   addAndMakeVisible(lowBand);
   addAndMakeVisible(midBand);
   addAndMakeVisible(highBand);
@@ -80,6 +92,10 @@ void CompressorBandControls::setRatioMinMaxLabels() {
   auto ratioParam = static_cast<const juce::AudioParameterChoice*>(ratioSlider.getParam());
   auto maxRatio = (ratioParam->choices.end() - 1)->getIntValue();
   ratioSlider.labels.add({1.f, juce::String(maxRatio) + ":1"});
+}
+
+void CompressorBandControls::updateAttachments() {
+  // TODO
 }
 
 void CompressorBandControls::resized() {
@@ -101,7 +117,8 @@ void CompressorBandControls::resized() {
   };
 
   auto boxForStateBtns = createBandBtnCtrlBox({&bypassBtn, &soloBtn, &muteBtn});
-  auto boxForBandSelectionBtns = createBandBtnCtrlBox({&highBand, &midBand, &lowBand});
+  auto boxForBandSelectionBtns =
+      createBandBtnCtrlBox({&highBand, &midBand, &lowBand});
 
   FlexBox flexBox;
   flexBox.flexDirection = FlexBox::Direction::row;
