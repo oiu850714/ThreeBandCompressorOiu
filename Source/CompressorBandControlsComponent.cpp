@@ -25,15 +25,22 @@ CompressorBandControls::CompressorBandControls(
   // clang-format on
 
   auto &params = getParams();
-  auto makeAttachment = [&params, &apvts](auto &slider, auto param) {
-    return std::make_unique<Attachment>(apvts, params.at(param), slider);
+  auto makeAttachment = [&params, &apvts](auto &attachment, auto &slider,
+                                          auto param) {
+    attachment =
+        std::make_unique<std::remove_reference_t<decltype(*attachment)>>(
+            apvts, params.at(param), slider);
   };
 
   // clang-format off
-  attackSliderAttachment = makeAttachment(attackSlider, Names::Attack_Mid_Band);
-  releaseSliderAttachment = makeAttachment(releaseSlider, Names::Release_Mid_Band);
-  thresholdSliderAttachment = makeAttachment(thresholdSlider, Names::Threshold_Mid_Band);
-  ratioSliderAttachment = makeAttachment(ratioSlider, Names::Ratio_Mid_Band);
+  makeAttachment(attackSliderAttachment, attackSlider, Names::Attack_Mid_Band);
+  makeAttachment(releaseSliderAttachment, releaseSlider, Names::Release_Mid_Band);
+  makeAttachment(thresholdSliderAttachment, thresholdSlider, Names::Threshold_Mid_Band);
+  makeAttachment(ratioSliderAttachment, ratioSlider, Names::Ratio_Mid_Band);
+
+  makeAttachment(bypassBtnAttachment, bypassBtn, Names::Bypassed_Mid_Band);
+  makeAttachment(muteBtnAttachment, muteBtn, Names::Mute_Mid_Band);
+  makeAttachment(soloBtnAttachment, soloBtn, Names::Solo_Mid_Band);
   // clang-format on
 
   // XXX ratio slider's min and max unit need to use special values.
@@ -44,6 +51,13 @@ CompressorBandControls::CompressorBandControls(
   addAndMakeVisible(releaseSlider);
   addAndMakeVisible(thresholdSlider);
   addAndMakeVisible(ratioSlider);
+
+  bypassBtn.setName("X");
+  soloBtn.setName("S");
+  muteBtn.setName("M");
+  addAndMakeVisible(bypassBtn);
+  addAndMakeVisible(muteBtn);
+  addAndMakeVisible(soloBtn);
 }
 
 void CompressorBandControls::paint(juce::Graphics &g) {
@@ -62,6 +76,21 @@ void CompressorBandControls::resized() {
   using namespace juce;
   auto bounds = getLocalBounds().reduced(5);
 
+  auto createBandBtnCtrlBox = [](std::vector<Component *> comps) {
+    FlexBox flexBox;
+    flexBox.flexDirection = FlexBox::Direction::column;
+    flexBox.flexWrap = FlexBox::Wrap::noWrap;
+
+    const auto spacer = FlexItem().withHeight(2.f);
+    for (auto comp : comps) {
+      flexBox.items.add(spacer);
+      flexBox.items.add(FlexItem(*comp).withFlex(1.0f));
+    }
+    flexBox.items.add(spacer);
+    return flexBox;
+  };
+
+  auto boxForStateBtns = createBandBtnCtrlBox({&bypassBtn, &soloBtn, &muteBtn});
   FlexBox flexBox;
   flexBox.flexDirection = FlexBox::Direction::row;
   flexBox.flexWrap = FlexBox::Wrap::noWrap;
@@ -70,6 +99,7 @@ void CompressorBandControls::resized() {
   flexBox.items.add(FlexItem(releaseSlider).withFlex(1.0f));
   flexBox.items.add(FlexItem(thresholdSlider).withFlex(1.0f));
   flexBox.items.add(FlexItem(ratioSlider).withFlex(1.0f));
+  flexBox.items.add(FlexItem(boxForStateBtns).withFlex(0.3f));
 
   flexBox.performLayout(bounds);
 }

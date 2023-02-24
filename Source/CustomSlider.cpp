@@ -109,6 +109,19 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     g.drawRect(bounds);
 
     g.strokePath(analyzerButton->randomPath, PathStrokeType(1.f));
+  } else {
+    auto bounds = toggleButton.getLocalBounds().reduced(2);
+
+    auto isOn = toggleButton.getToggleState();
+
+    const int cornerSize = 4;
+
+    g.setColour(isOn ? Colours::white : Colours::black);
+    g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
+    g.setColour(isOn ? Colours::black : Colours::white);
+    g.drawRoundedRectangle(bounds.toFloat(), cornerSize, 1);
+
+    g.drawFittedText(toggleButton.getName(), bounds, Justification::centred, 1);
   }
 }
 //==============================================================================

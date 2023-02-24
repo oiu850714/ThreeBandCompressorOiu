@@ -20,6 +20,7 @@ class CompressorBandControls : public juce::Component {
   void paint(juce::Graphics &g) override;
  private:
   RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider, ratioSlider;
+  juce::ToggleButton bypassBtn, soloBtn, muteBtn;
 
   using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
   // Dynamic allocating attachments for the sake of constructor clarity...
@@ -27,5 +28,9 @@ class CompressorBandControls : public juce::Component {
                               releaseSliderAttachment,
                               thresholdSliderAttachment,
                               ratioSliderAttachment;
+  using BtnAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+  std::unique_ptr<BtnAttachment> bypassBtnAttachment,
+                                 muteBtnAttachment,
+                                 soloBtnAttachment;
   void setRatioMinMaxLabels();
 };
