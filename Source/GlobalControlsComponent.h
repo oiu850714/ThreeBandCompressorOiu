@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "CustomSlider.h"
 
 class GlobalControls : public juce::Component {
  public:
@@ -27,15 +28,15 @@ class GlobalControls : public juce::Component {
   };
 
   // clang-format off
-  RotarySlider inGainSlider,
-               lowMidXoverSlider,
-               midHighXoverSlider,
-               outGainSlider;
+  using RSWL = RotarySliderWithLabels;
+  RSWL inGainSlider, lowMidXoverSlider, midHighXoverSlider, outGainSlider;
 
   using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+  // Dynamic allocating attachments for the sake of constructor clarity...
   std::unique_ptr<Attachment> inGainSliderAttachment,
                               lowMidXoverSliderAttachment,
                               midHighXoverSliderAttachment,
                               outGainSliderAttachment;
   // clang-format on
+  void addSlidersMinMaxLabels(juce::AudioProcessorValueTreeState &apvts);
 };

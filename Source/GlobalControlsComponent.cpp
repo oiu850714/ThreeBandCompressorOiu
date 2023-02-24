@@ -12,7 +12,19 @@
 
 #include "ParamIDConst.h"
 
-GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts) {
+static juce::RangedAudioParameter *getParams(
+    juce::AudioProcessorValueTreeState &apvts, Params::Names name) {
+  auto &params = Params::getParams();
+  return apvts.getParameter(params.at(name));
+}
+
+GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
+    // clang-format off
+    : inGainSlider      {*getParams(apvts, Params::Names::Gain_In), "dB"},
+      lowMidXoverSlider {*getParams(apvts, Params::Names::Low_Mid_Crossover_Freq), "Hz"},
+      midHighXoverSlider{*getParams(apvts, Params::Names::Mid_High_Crossover_Freq), "Hz"},
+      outGainSlider     {*getParams(apvts, Params::Names::Gain_In), "dB"} {
+  // clang-format on
   using namespace Params;
   auto &params = Params::getParams();
 
@@ -26,6 +38,8 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts) {
   midHighXoverSliderAttachment =
       makeAttachment(midHighXoverSlider, Names::Mid_High_Crossover_Freq);
   outGainSliderAttachment = makeAttachment(outGainSlider, Names::Gain_Out);
+
+  addSlidersMinMaxLabels(apvts);
 
   addAndMakeVisible(inGainSlider);
   addAndMakeVisible(lowMidXoverSlider);
@@ -49,7 +63,7 @@ void GlobalControls::paint(juce::Graphics &g) {
 
 void GlobalControls::resized() {
   using namespace juce;
-  auto bounds = getLocalBounds();
+  auto bounds = getLocalBounds().reduced(5);
 
   FlexBox flexBox;
   flexBox.flexDirection = FlexBox::Direction::row;
@@ -61,4 +75,20 @@ void GlobalControls::resized() {
   flexBox.items.add(FlexItem(outGainSlider).withFlex(1.0f));
 
   flexBox.performLayout(bounds);
+}
+
+void GlobalControls::addSlidersMinMaxLabels(juce::AudioProcessorValueTreeState &apvts) {
+  auto addMinMaxLabel = [&params = Params::getParams(), &apvts = apvts] (auto &slider, auto name) {
+    auto paramName = params.at(name);
+    auto param = apvts.getParameter(paramName);
+    auto minVal = param->getNormalisableRange().start, maxVal = param->getNormalisableRange().end;
+    slider.labels.add({0.f, unitValueTruncatedOver1K(minVal, slider.getSuffix())});
+    slider.labels.add({1.f, unitValueTruncatedOver1K(maxVal, slider.getSuffix())});
+  };
+
+  using namespace Params;
+  addMinMaxLabel(inGainSlider, Names::Gain_In);
+  addMinMaxLabel(lowMidXoverSlider, Params::Names::Low_Mid_Crossover_Freq);
+  addMinMaxLabel(midHighXoverSlider, Params::Names::Mid_High_Crossover_Freq);
+  addMinMaxLabel(outGainSlider, Params::Names::Gain_Out);
 }
