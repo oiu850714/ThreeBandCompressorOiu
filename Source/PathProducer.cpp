@@ -25,7 +25,8 @@ void PathProducer::process(juce::Rectangle<float> fftBounds,
           monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size),
           tempIncomingBuffer.getReadPointer(0, 0), size);
 
-      leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+      leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer,
+                                                             negativeInfinity);
     }
   }
 
@@ -35,7 +36,8 @@ void PathProducer::process(juce::Rectangle<float> fftBounds,
   while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
     std::vector<float> fftData;
     if (leftChannelFFTDataGenerator.getFFTData(fftData)) {
-      pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.f);
+      pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth,
+                                negativeInfinity);
     }
   }
 

@@ -23,7 +23,7 @@ struct AnalyzerPathGenerator {
                     juce::Rectangle<float> fftBounds, int fftSize,
                     float binWidth, float negativeInfinity) {
     auto top = fftBounds.getY();
-    auto bottom = fftBounds.getHeight();
+    auto bottom = fftBounds.getBottom();
     auto width = fftBounds.getWidth();
 
     int numBins = (int)fftSize / 2;
@@ -32,7 +32,7 @@ struct AnalyzerPathGenerator {
     p.preallocateSpace(3 * (int)fftBounds.getWidth());
 
     auto map = [bottom, top, negativeInfinity](float v) {
-      return juce::jmap(v, negativeInfinity, 0.f, float(bottom + 10), top);
+      return juce::jmap(v, negativeInfinity, 0.f, bottom, top);
     };
 
     auto y = map(renderData[0]);

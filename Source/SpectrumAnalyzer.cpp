@@ -197,7 +197,13 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g) {
   }
 }
 
-void SpectrumAnalyzer::resized() {}
+void SpectrumAnalyzer::resized() {
+  auto fftBounds = getAnalysisArea().toFloat();
+  auto negInf = juce::jmap(getLocalBounds().toFloat().getBottom(),
+                           fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
+  leftPathProducer.setNegativeInfinity(negInf);
+  rightPathProducer.setNegativeInfinity(negInf);
+}
 
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex,
                                              float newValue) {
@@ -207,6 +213,7 @@ void SpectrumAnalyzer::parameterValueChanged(int parameterIndex,
 void SpectrumAnalyzer::timerCallback() {
   if (shouldShowFFTAnalysis) {
     auto fftBounds = getAnalysisArea().toFloat();
+    fftBounds.setBottom(getLocalBounds().getBottom());
     auto sampleRate = audioProcessor.getSampleRate();
 
     leftPathProducer.process(fftBounds, sampleRate);

@@ -27,6 +27,7 @@ struct PathProducer {
   void process(juce::Rectangle<float> fftBounds, double sampleRate);
   juce::Path getPath() { return leftChannelFFTPath; }
 
+  void setNegativeInfinity(float val) noexcept { negativeInfinity = val; }
  private:
   SingleChannelSampleFifo<ThreeBandCompressorOiuAudioProcessor::BlockType>*
       leftChannelFifo;
@@ -38,4 +39,6 @@ struct PathProducer {
   AnalyzerPathGenerator<juce::Path> pathProducer;
 
   juce::Path leftChannelFFTPath;
+
+  float negativeInfinity { -48.f };
 };
