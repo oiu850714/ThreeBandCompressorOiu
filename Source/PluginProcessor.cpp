@@ -232,6 +232,9 @@ void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
   }
   inputGain.setRampDurationSeconds(0.05);
   outputGain.setRampDurationSeconds(0.05);
+
+  leftChannelFifo.prepare(samplesPerBlock);
+  rightChannelFifo.prepare(samplesPerBlock);
 }
 
 void ThreeBandCompressorOiuAudioProcessor::releaseResources() {
@@ -324,6 +327,9 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
     buffer.clear(i, 0, buffer.getNumSamples());
 
   updateDSPStates();
+
+  leftChannelFifo.update(buffer);
+  rightChannelFifo.update(buffer);
 
   applyGain(buffer, inputGain);
 
