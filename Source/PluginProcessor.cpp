@@ -282,7 +282,8 @@ void ThreeBandCompressorOiuAudioProcessor::updateDSPStates() {
   }
 }
 
-void ThreeBandCompressorOiuAudioProcessor::splitBands(const juce::AudioBuffer<float> &buffer) {
+void ThreeBandCompressorOiuAudioProcessor::splitBands(
+    const juce::AudioBuffer<float>& buffer) {
   for (auto& splittedBuffer : splittedBuffers) {
     // Let LinkwitzRileyFilter operate on copied buffer and finally combine the
     // results back.
@@ -328,7 +329,6 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
 
   splitBands(buffer);
 
-
   // Compress each band after we split them.
   for (size_t i = 0; i < 3; ++i) {
     compressors[i].process(splittedBuffers[i]);
@@ -339,8 +339,8 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   auto numChannels = buffer.getNumChannels();
   buffer.clear();
 
-  auto addBackSplittedBuffer = [ns = numSamples, nc = numChannels](auto& buffer,
-                                                           const auto& source) {
+  auto addBackSplittedBuffer = [ns = numSamples, nc = numChannels](
+                                   auto& buffer, const auto& source) {
     for (auto i = 0; i < nc; ++i) {
       buffer.addFrom(i, 0, source, i, 0, ns);
     }
@@ -351,9 +351,10 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
     // If any of compressor is in solo, then we add the corresponding buffer
     // only. (But we prefer compressor with smaller index if multiple
     // compressors are in solo.)
-    compressors[0].isSolo()   ? addBackSplittedBuffer(buffer, splittedBuffers[0])
-    : compressors[1].isSolo() ? addBackSplittedBuffer(buffer, splittedBuffers[1])
-                              : addBackSplittedBuffer(buffer, splittedBuffers[2]);
+    compressors[0].isSolo() ? addBackSplittedBuffer(buffer, splittedBuffers[0])
+    : compressors[1].isSolo()
+        ? addBackSplittedBuffer(buffer, splittedBuffers[1])
+        : addBackSplittedBuffer(buffer, splittedBuffers[2]);
   } else {
     // Otherwise, we add buffers for compressors that are not muted.
     for (auto i = 0; i < 3; ++i) {
@@ -373,7 +374,7 @@ bool ThreeBandCompressorOiuAudioProcessor::hasEditor() const {
 
 juce::AudioProcessorEditor*
 ThreeBandCompressorOiuAudioProcessor::createEditor() {
-  return new ThreeBandCompressorOiuAudioProcessorEditor (*this);
+  return new ThreeBandCompressorOiuAudioProcessorEditor(*this);
 }
 
 //==============================================================================

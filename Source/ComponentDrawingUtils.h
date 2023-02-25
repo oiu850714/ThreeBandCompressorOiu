@@ -12,7 +12,8 @@
 
 #include <JuceHeader.h>
 
-inline void drawModuleBackground(juce::Graphics &g, juce::Rectangle<int> bounds) {
+inline void drawModuleBackground(juce::Graphics &g,
+                                 juce::Rectangle<int> bounds) {
   using namespace juce;
 
   // border

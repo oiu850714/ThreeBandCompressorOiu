@@ -66,4 +66,3 @@ void GlobalControls::resized() {
 
   flexBox.performLayout(bounds);
 }
-

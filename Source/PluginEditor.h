@@ -10,10 +10,10 @@
 
 #include <JuceHeader.h>
 
-#include "PluginProcessor.h"
 #include "CompressorBandControlsComponent.h"
-#include "GlobalControlsComponent.h"
 #include "CustomSlider.h"
+#include "GlobalControlsComponent.h"
+#include "PluginProcessor.h"
 
 //==============================================================================
 /**
@@ -43,8 +43,8 @@ class ThreeBandCompressorOiuAudioProcessorEditor
 
   CustomLookAndFeel lnf;
 
-  GlobalControls globalControls {audioProcessor.apvts};
-  CompressorBandControls bandControls {audioProcessor.apvts};
+  GlobalControls globalControls{audioProcessor.apvts};
+  CompressorBandControls bandControls{audioProcessor.apvts};
   Placeholder controlBar, analyzer;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

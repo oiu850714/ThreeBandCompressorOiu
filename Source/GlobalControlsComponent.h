@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+
 #include "CustomSlider.h"
 
 class GlobalControls : public juce::Component {

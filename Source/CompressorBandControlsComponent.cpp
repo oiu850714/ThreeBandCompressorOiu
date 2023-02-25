@@ -123,10 +123,10 @@ void CompressorBandControls::setRatioMinMaxLabels() {
 void CompressorBandControls::updateParamSelection() {
   // TODO
   auto updateAttachment = [&params = getParams(), &apvts = this->apvts](
-                            auto &attachment, auto &slider, auto param) {
+                              auto &attachment, auto &slider, auto param) {
     // XXX: in theory, we can skip the reset() step.
     //      But that does NOT work (if we really skip reset()) and will make the
-    //      old attached parameter to be reset. 
+    //      old attached parameter to be reset.
     // Refer to: https://youtu.be/Mo0Oco3Vimo?t=19085
     attachment.reset();
     attachment =
@@ -142,10 +142,11 @@ void CompressorBandControls::updateParamSelection() {
     ratioSlider.changeParam(getParams(apvts, ratio));
   };
 
-  auto updateAttachments =
-      [this, updateAttachment](auto attack, auto release, auto threshold,
-                             auto ratio, auto bypassed, auto mute, auto solo) {
-        // clang-format off
+  auto updateAttachments = [this, updateAttachment](auto attack, auto release,
+                                                    auto threshold, auto ratio,
+                                                    auto bypassed, auto mute,
+                                                    auto solo) {
+    // clang-format off
         updateAttachment(attackSliderAttachment, attackSlider, attack);
         updateAttachment(releaseSliderAttachment, releaseSlider, release);
         updateAttachment(thresholdSliderAttachment, thresholdSlider, threshold);
@@ -154,8 +155,8 @@ void CompressorBandControls::updateParamSelection() {
         updateAttachment(bypassBtnAttachment, bypassBtn, bypassed);
         updateAttachment(muteBtnAttachment, muteBtn, mute);
         updateAttachment(soloBtnAttachment, soloBtn, solo);
-        // clang-format on
-      };
+    // clang-format on
+  };
 
   enum class BandType { Low, Mid, High };
 

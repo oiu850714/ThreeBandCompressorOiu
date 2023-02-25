@@ -12,10 +12,12 @@
 
 #include "CustomSlider.h"
 
-void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
-                                   int height, float sliderPosProportional,
-                                   float rotaryStartAngle, float rotaryEndAngle,
-                                   juce::Slider& slider) {
+void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y,
+                                         int width, int height,
+                                         float sliderPosProportional,
+                                         float rotaryStartAngle,
+                                         float rotaryEndAngle,
+                                         juce::Slider& slider) {
   using namespace juce;
 
   auto bounds = Rectangle<float>(x, y, width, height);
@@ -66,9 +68,9 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 }
 
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
-                                   juce::ToggleButton& toggleButton,
-                                   bool shouldDrawButtonAsHighlighted,
-                                   bool shouldDrawButtonAsDown) {
+                                         juce::ToggleButton& toggleButton,
+                                         bool shouldDrawButtonAsHighlighted,
+                                         bool shouldDrawButtonAsDown) {
   using namespace juce;
 
   if (auto* pb = dynamic_cast<PowerButton*>(&toggleButton)) {
@@ -136,7 +138,9 @@ void RotarySliderWithLabels::paint(juce::Graphics& g) {
   auto sliderBounds = getSliderBounds();
 
   g.setColour(Colours::blueviolet);
-  g.drawFittedText(getName(), getLocalBounds().removeFromTop(getTextHeight() + 2), Justification::centredBottom, 1);
+  g.drawFittedText(getName(),
+                   getLocalBounds().removeFromTop(getTextHeight() + 2),
+                   Justification::centredBottom, 1);
 
   //    g.setColour(Colours::red);
   //    g.drawRect(getLocalBounds());
@@ -178,7 +182,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g) {
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
   auto bounds = getLocalBounds();
-  bounds.removeFromTop(getTextHeight() * 1.5); // For displaying title.
+  bounds.removeFromTop(getTextHeight() * 1.5);  // For displaying title.
 
   auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
@@ -186,7 +190,7 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
   juce::Rectangle<int> r;
   r.setSize(size, size);
   r.setCentre(bounds.getCentreX(), 0);
-  r.setY(bounds.getY()); // For displaying title.
+  r.setY(bounds.getY());  // For displaying title.
 
   return r;
 }
@@ -202,8 +206,7 @@ juce::String RotarySliderWithLabels::getDisplayString() const {
   }
 }
 
-void RotarySliderWithLabels::changeParam(
-    juce::RangedAudioParameter* newParam) {
+void RotarySliderWithLabels::changeParam(juce::RangedAudioParameter* newParam) {
   param = newParam;
   if (param) {
     setMinMaxLabels();
@@ -212,7 +215,8 @@ void RotarySliderWithLabels::changeParam(
 }
 
 juce::String RotaryRatioSlider::getDisplayString() const {
-  auto* choiceParam = dynamic_cast<const juce::AudioParameterChoice*>(getParam());
+  auto* choiceParam =
+      dynamic_cast<const juce::AudioParameterChoice*>(getParam());
   jassert(choiceParam != nullptr);
 
   auto currentChoice = choiceParam->getCurrentChoiceName();
@@ -222,8 +226,7 @@ juce::String RotaryRatioSlider::getDisplayString() const {
 void RotaryRatioSlider::setMinMaxLabels() {
   labels.clear();
   labels.add({0.f, "1:1"});
-  auto ratioParam =
-      static_cast<const juce::AudioParameterChoice *>(getParam());
+  auto ratioParam = static_cast<const juce::AudioParameterChoice*>(getParam());
   auto maxRatio = (ratioParam->choices.end() - 1)->getIntValue();
   labels.add({1.f, juce::String(maxRatio) + ":1"});
 }
