@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 
 #include "CompressorBand.h"
+#include "SingleChannelSampleFifo.h"
 
 //==============================================================================
 /**
@@ -61,6 +62,9 @@ class ThreeBandCompressorOiuAudioProcessor
   void setStateInformation(const void* data, int sizeInBytes) override;
 
   juce::AudioProcessorValueTreeState apvts;
+  using BlockType = juce::AudioBuffer<float>;
+  SingleChannelSampleFifo<BlockType> leftChannelFifo{Channel::Left};
+  SingleChannelSampleFifo<BlockType> rightChannelFifo{Channel::Right};
 
  private:
   //==============================================================================

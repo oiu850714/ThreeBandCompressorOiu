@@ -14,6 +14,7 @@
 #include "CustomSlider.h"
 #include "GlobalControlsComponent.h"
 #include "PluginProcessor.h"
+#include "SpectrumAnalyzer.h"
 
 //==============================================================================
 /**
@@ -45,7 +46,8 @@ class ThreeBandCompressorOiuAudioProcessorEditor
 
   GlobalControls globalControls{audioProcessor.apvts};
   CompressorBandControls bandControls{audioProcessor.apvts};
-  Placeholder controlBar, analyzer;
+  SpectrumAnalyzer analyzer{audioProcessor};
+  Placeholder controlBar;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessorEditor)

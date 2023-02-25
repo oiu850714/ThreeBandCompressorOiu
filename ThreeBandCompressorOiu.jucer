@@ -6,6 +6,8 @@
   <MAINGROUP id="Sgu6M2" name="ThreeBandCompressorOiu">
     <GROUP id="{DFDE9391-D014-11E2-E7EF-DFA10FD37929}" name="Source">
       <GROUP id="{3A8B66E0-B808-20D0-18C1-01A70D57C90E}" name="GUI">
+        <FILE id="JfOOoW" name="AnalyzerPathGenerator.h" compile="0" resource="0"
+              file="Source/AnalyzerPathGenerator.h"/>
         <FILE id="MhcQ71" name="CompressorBandControlsComponent.cpp" compile="1"
               resource="0" file="Source/CompressorBandControlsComponent.cpp"/>
         <FILE id="Ytgmrd" name="CompressorBandControlsComponent.h" compile="0"
@@ -13,16 +15,28 @@
         <FILE id="y6vnil" name="CustomSlider.cpp" compile="1" resource="0"
               file="Source/CustomSlider.cpp"/>
         <FILE id="QU1jZA" name="CustomSlider.h" compile="0" resource="0" file="Source/CustomSlider.h"/>
+        <FILE id="kzHr3q" name="FFTDataGenerator.h" compile="0" resource="0"
+              file="Source/FFTDataGenerator.h"/>
         <FILE id="OMvRZv" name="GlobalControlsComponent.cpp" compile="1" resource="0"
               file="Source/GlobalControlsComponent.cpp"/>
         <FILE id="BBHbuj" name="GlobalControlsComponent.h" compile="0" resource="0"
               file="Source/GlobalControlsComponent.h"/>
+        <FILE id="qqEPX4" name="PathProducer.cpp" compile="1" resource="0"
+              file="Source/PathProducer.cpp"/>
+        <FILE id="UWkkOY" name="PathProducer.h" compile="0" resource="0" file="Source/PathProducer.h"/>
+        <FILE id="AEjmeH" name="SpectrumAnalyzer.cpp" compile="1" resource="0"
+              file="Source/SpectrumAnalyzer.cpp"/>
+        <FILE id="ja86rH" name="SpectrumAnalyzer.h" compile="0" resource="0"
+              file="Source/SpectrumAnalyzer.h"/>
       </GROUP>
       <GROUP id="{E87A95C5-2DC8-4CE5-5642-61E730E3CCE9}" name="DSP">
         <FILE id="a4n79d" name="CompressorBand.cpp" compile="1" resource="0"
               file="Source/CompressorBand.cpp"/>
         <FILE id="VWIVKv" name="CompressorBand.h" compile="0" resource="0"
               file="Source/CompressorBand.h"/>
+        <FILE id="Oefwzi" name="Fifo.h" compile="0" resource="0" file="Source/Fifo.h"/>
+        <FILE id="nAL2I4" name="SingleChannelSampleFifo.h" compile="0" resource="0"
+              file="Source/SingleChannelSampleFifo.h"/>
       </GROUP>
       <GROUP id="{7A6714BA-16C6-AA24-0827-B58055057ABC}" name="utils">
         <FILE id="iWr6cZ" name="ComponentDrawingUtils.h" compile="0" resource="0"
