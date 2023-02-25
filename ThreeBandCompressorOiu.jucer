@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="f5gpNo" name="ThreeBandCompressorOiu" projectType="audioplug"
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" displaySplashScreen="1"
-              jucerFormatVersion="1" projectLineFeed="&#10;" cppLanguageStandard="17">
+              jucerFormatVersion="1" projectLineFeed="&#10;" cppLanguageStandard="latest">
   <MAINGROUP id="Sgu6M2" name="ThreeBandCompressorOiu">
     <GROUP id="{DFDE9391-D014-11E2-E7EF-DFA10FD37929}" name="Source">
       <GROUP id="{3A8B66E0-B808-20D0-18C1-01A70D57C90E}" name="GUI">

@@ -289,29 +289,29 @@ void ThreeBandCompressorOiuAudioProcessor::splitBands(
     // results back.
     splittedBuffer = buffer;
   }
-  auto FB0Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{splittedBuffers[0]});
-  auto FB1Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{splittedBuffers[1]});
-  auto FB2Ctx = juce::dsp::ProcessContextReplacing<float>(
-      juce::dsp::AudioBlock<float>{splittedBuffers[2]});
+  auto SB0 = juce::dsp::AudioBlock<float>{splittedBuffers[0]};
+  auto SB1 = juce::dsp::AudioBlock<float>{splittedBuffers[1]};
+  auto SB2 = juce::dsp::AudioBlock<float>{splittedBuffers[2]};
+  auto SB0Ctx = juce::dsp::ProcessContextReplacing<float>(SB0);
+  auto SB1Ctx = juce::dsp::ProcessContextReplacing<float>(SB1);
+  auto SB2Ctx = juce::dsp::ProcessContextReplacing<float>(SB2);
 
   // See https://youtu.be/Mo0Oco3Vimo?t=9608
 
   // First band.
-  LP1.process(FB0Ctx);
-  AP2.process(FB0Ctx);
+  LP1.process(SB0Ctx);
+  AP2.process(SB0Ctx);
 
   // Second band.
-  HP1.process(FB1Ctx);
+  HP1.process(SB1Ctx);
   // See the video above.
   // We need to first copy the filtered result to the third buffer;
   // after that we continue to process the result in the second buffer.
   splittedBuffers[2] = splittedBuffers[1];
-  LP2.process(FB1Ctx);
+  LP2.process(SB1Ctx);
 
   // Third band.
-  HP2.process(FB2Ctx);
+  HP2.process(SB2Ctx);
 }
 
 void ThreeBandCompressorOiuAudioProcessor::processBlock(
