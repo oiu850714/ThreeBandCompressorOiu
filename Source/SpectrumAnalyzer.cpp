@@ -14,6 +14,7 @@
 #include "SpectrumAnalyzer.h"
 
 #include "ComponentDrawingUtils.h"
+#include "ParamIDConst.h"
 
 SpectrumAnalyzer::SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor& p)
     : audioProcessor(p),
@@ -23,6 +24,18 @@ SpectrumAnalyzer::SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor& p)
   for (auto param : params) {
     param->addListener(this);
   }
+
+  auto setParam = [&apvts = audioProcessor.apvts,
+                   &params = Params::getParams()](auto& paramPtr,
+                                                  const auto& paramName) {
+    paramPtr = static_cast<std::remove_reference_t<decltype(paramPtr)>>(
+        apvts.getParameter(params.at(paramName)));
+  };
+  setParam(lowMidXoverParam, Params::Names::Low_Mid_Crossover_Freq);
+  setParam(midHighXoverParam, Params::Names::Mid_High_Crossover_Freq);
+  setParam(lowBandThredholdParam, Params::Names::Threshold_Low_Band);
+  setParam(midBandThredholdParam, Params::Names::Threshold_Mid_Band);
+  setParam(highBandThredholdParam, Params::Names::Threshold_High_Band);
 
   startTimerHz(60);
 }
@@ -46,6 +59,7 @@ void SpectrumAnalyzer::paint(juce::Graphics& g) {
 
   g.setColour(Colours::black);
 
+  drawBandParameterLines(g, backgroundBounds);
   drawTextLabels(g, backgroundBounds);
 }
 
@@ -241,4 +255,36 @@ void SpectrumAnalyzer::drawFFTAnalysis(juce::Graphics& g,
     g.setColour(Colour(215u, 201u, 134u));
     g.strokePath(rightChannelFFTPath, PathStrokeType(1.f));
   }
+}
+
+void SpectrumAnalyzer::drawBandParameterLines(
+    juce::Graphics& g, juce::Rectangle<int> backgroundBounds) {
+  using namespace juce;
+  auto analysisArea = getAnalysisArea(backgroundBounds);
+  const auto top = analysisArea.getY();
+  const auto bottom = analysisArea.getBottom();
+
+  auto mapX = [left = analysisArea.getX(),
+               width = analysisArea.getWidth()](float frequency) {
+    auto normX = juce::mapFromLog10(frequency, MIN_FREQ, MAX_FREQ);
+    return (left + width * normX);
+  };
+  auto mapY = [top = top, bottom = bottom](float gDb) {
+    return juce::jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX,
+                      (float)bottom, (float)top);
+  };
+
+  auto lowMidX = mapX(lowMidXoverParam->get());
+  auto midHighX = mapX(midHighXoverParam->get());
+  g.setColour(Colours::orange);
+  g.drawVerticalLine(lowMidX, top, bottom);
+  g.drawVerticalLine(midHighX, top, bottom);
+
+  auto lowBandThresholdY = mapY(lowBandThredholdParam->get());
+  auto midBandThresholdY = mapY(midBandThredholdParam->get());
+  auto highBandThresholdY = mapY(highBandThredholdParam->get());
+  g.setColour(Colours::yellow);
+  g.drawHorizontalLine(lowBandThresholdY, analysisArea.getX(), lowMidX);
+  g.drawHorizontalLine(midBandThresholdY, lowMidX, midHighX);
+  g.drawHorizontalLine(highBandThresholdY, midHighX, analysisArea.getRight());
 }

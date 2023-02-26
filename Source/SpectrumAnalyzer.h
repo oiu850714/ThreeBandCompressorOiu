@@ -63,4 +63,13 @@ struct SpectrumAnalyzer : juce::Component,
   PathProducer leftPathProducer, rightPathProducer;
 
   void drawFFTAnalysis(juce::Graphics& g, juce::Rectangle<int> analysisArea);
+
+  // Used to draw band crossover and band thresholds
+  juce::AudioParameterFloat* lowMidXoverParam{nullptr};
+  juce::AudioParameterFloat* midHighXoverParam{nullptr};
+  juce::AudioParameterFloat* lowBandThredholdParam{nullptr};
+  juce::AudioParameterFloat* midBandThredholdParam{nullptr};
+  juce::AudioParameterFloat* highBandThredholdParam{nullptr};
+  void drawBandParameterLines(juce::Graphics& g,
+                              juce::Rectangle<int> backgroundBounds);
 };
