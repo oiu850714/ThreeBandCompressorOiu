@@ -47,9 +47,6 @@ void SpectrumAnalyzer::paint(juce::Graphics& g) {
   g.setColour(Colours::black);
 
   drawTextLabels(g, backgroundBounds);
-
-  g.setColour(Colours::orange);
-  g.drawRoundedRectangle(getRenderArea(backgroundBounds).toFloat(), 4.f, 1.f);
 }
 
 std::vector<float> SpectrumAnalyzer::getFrequencies() {
