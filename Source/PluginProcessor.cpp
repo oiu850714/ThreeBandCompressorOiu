@@ -329,9 +329,6 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
 
   updateDSPStates();
 
-  leftChannelFifo.update(buffer);
-  rightChannelFifo.update(buffer);
-
   applyGain(buffer, inputGain);
 
   splitBands(buffer);
@@ -372,6 +369,9 @@ void ThreeBandCompressorOiuAudioProcessor::processBlock(
   }
 
   applyGain(buffer, outputGain);
+
+  leftChannelFifo.update(buffer);
+  rightChannelFifo.update(buffer);
 }
 
 //==============================================================================
