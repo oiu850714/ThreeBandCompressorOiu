@@ -61,4 +61,6 @@ struct SpectrumAnalyzer : juce::Component,
   juce::Rectangle<int> getAnalysisArea(juce::Rectangle<int> backgroundBounds);
 
   PathProducer leftPathProducer, rightPathProducer;
+
+  void drawFFTAnalysis(juce::Graphics& g, juce::Rectangle<int> analysisArea);
 };
