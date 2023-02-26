@@ -12,7 +12,7 @@
 
 #include <JuceHeader.h>
 
-inline void drawModuleBackground(juce::Graphics &g,
+inline auto drawModuleBackground(juce::Graphics &g,
                                  juce::Rectangle<int> bounds) {
   using namespace juce;
 
@@ -23,4 +23,6 @@ inline void drawModuleBackground(juce::Graphics &g,
   bounds.reduce(3, 3);
   g.setColour(Colours::black);
   g.fillRoundedRectangle(bounds.toFloat(), 3);
+
+  return bounds;
 }
