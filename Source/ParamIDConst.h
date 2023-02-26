@@ -11,6 +11,14 @@
 #pragma once
 
 #include <JuceHeader.h>
+
+constexpr float MIN_FREQ = 20.f;
+constexpr float MAX_FREQ = 20000.f;
+constexpr float DECIBAL_NEGATIVE_INFINITY = -72.f;
+constexpr float DECIBAL_MAX = 12.f;
+constexpr float DECIBAL_INCREMENT = 12.f;
+constexpr float COMPRESSOR_MIN_THRESHOLD = -60.f;
+
 namespace Params {
 enum Names {
   Low_Mid_Crossover_Freq,

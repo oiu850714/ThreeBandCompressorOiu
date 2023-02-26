@@ -56,7 +56,11 @@ std::vector<float> SpectrumAnalyzer::getFrequencies() {
 }
 
 std::vector<float> SpectrumAnalyzer::getGains() {
-  return std::vector<float>{-24, -12, 0, 12, 24};
+  std::vector<float> gains;
+  for (auto gain = DECIBAL_NEGATIVE_INFINITY; gain <= DECIBAL_MAX; gain += DECIBAL_INCREMENT) {
+    gains.push_back(gain);
+  }
+  return gains;
 }
 
 std::vector<float> SpectrumAnalyzer::getXs(const std::vector<float>& freqs,
@@ -92,7 +96,7 @@ void SpectrumAnalyzer::drawBackgroundGrid(
   auto gain = getGains();
 
   for (auto gDb : gain) {
-    auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom), float(top));
 
     g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey);
     g.drawHorizontalLine(y, left, right);
@@ -145,7 +149,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
   auto gain = getGains();
 
   for (auto gDb : gain) {
-    auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom), float(top));
 
     String str;
     if (gDb > 0) str << "+";
@@ -162,13 +166,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
 
     g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
 
-    str.clear();
-    str << (gDb - 24.f);
-
     r.setX(backgroundBounds.getX() + 1);
-    textWidth = g.getCurrentFont().getStringWidth(str);
-    r.setSize(textWidth, fontHeight);
-    g.setColour(Colours::lightgrey);
     g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
   }
 }
@@ -177,7 +175,7 @@ void SpectrumAnalyzer::resized() {
   auto bounds = getLocalBounds();
   auto fftBounds = getAnalysisArea(bounds).toFloat();
   auto negInf = juce::jmap(bounds.toFloat().getBottom(), fftBounds.getBottom(),
-                           fftBounds.getY(), -48.f, 0.f);
+                           fftBounds.getY(), DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX);
   leftPathProducer.setNegativeInfinity(negInf);
   rightPathProducer.setNegativeInfinity(negInf);
 }

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "ParamIDConst.h"
 #include "Fifo.h"
 
 
@@ -32,7 +33,7 @@ struct AnalyzerPathGenerator {
     p.preallocateSpace(3 * (int)fftBounds.getWidth());
 
     auto map = [bottom, top, negativeInfinity](float v) {
-      return juce::jmap(v, negativeInfinity, 0.f, bottom, top);
+      return juce::jmap(v, negativeInfinity, DECIBAL_MAX, bottom, top);
     };
 
     auto y = map(renderData[0]);
