@@ -33,6 +33,9 @@ class CompressorBand {
   bool isMute() const { return mute->get(); }
   bool isBypassed() const { return bypassed->get(); }
 
+  float getInputRMSLevelDb() const { return inputRMSLevelDb.load(); }
+  float getOutputRMSLevelDb() const { return outputRMSLevelDb.load(); }
+
  private:
   // Cached pointers for the parameters of apvts.
   juce::AudioParameterFloat *attack{nullptr};
@@ -45,4 +48,7 @@ class CompressorBand {
 
   //==============================================================================
   juce::dsp::Compressor<float> compressor;
+
+  std::atomic<float> inputRMSLevelDb;
+  std::atomic<float> outputRMSLevelDb;
 };

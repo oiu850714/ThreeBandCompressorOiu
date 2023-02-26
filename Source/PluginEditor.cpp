@@ -24,6 +24,8 @@ ThreeBandCompressorOiuAudioProcessorEditor::
   addAndMakeVisible(analyzer);
   addAndMakeVisible(globalControls);
   addAndMakeVisible(bandControls);
+
+  startTimerHz(60);
 }
 
 ThreeBandCompressorOiuAudioProcessorEditor::
@@ -50,6 +52,18 @@ void ThreeBandCompressorOiuAudioProcessorEditor::resized() {
   bandControls.setBounds(bounds.removeFromBottom(135));
   analyzer.setBounds(bounds.removeFromTop(225));
   globalControls.setBounds(bounds);
+}
+
+void ThreeBandCompressorOiuAudioProcessorEditor::timerCallback() {
+  // clang-format off
+  const auto[
+    lowInputRMS, lowOutputRMS,
+    midInputRMS, midOutputRMS,
+    highInputRMS, highOutputRMS] = audioProcessor.getLowMidHighBandRMSLevels();
+  analyzer.updateGainReductions(lowOutputRMS - lowInputRMS,
+                                midOutputRMS - midInputRMS,
+                                highOutputRMS - highInputRMS);
+  // clang-format on
 }
 
 ThreeBandCompressorOiuAudioProcessorEditor::Placeholder::Placeholder() {

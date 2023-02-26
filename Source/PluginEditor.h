@@ -20,7 +20,8 @@
 /**
  */
 class ThreeBandCompressorOiuAudioProcessorEditor
-    : public juce::AudioProcessorEditor {
+    : public juce::AudioProcessorEditor,
+      private juce::Timer {
  public:
   ThreeBandCompressorOiuAudioProcessorEditor(
       ThreeBandCompressorOiuAudioProcessor&);
@@ -48,6 +49,9 @@ class ThreeBandCompressorOiuAudioProcessorEditor
   CompressorBandControls bandControls{audioProcessor.apvts};
   SpectrumAnalyzer analyzer{audioProcessor};
   Placeholder controlBar;
+
+  // Used to update input/output RMS level for each compressor band.
+  void timerCallback() override;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessorEditor)

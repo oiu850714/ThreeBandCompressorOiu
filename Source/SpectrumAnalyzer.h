@@ -40,6 +40,8 @@ struct SpectrumAnalyzer : juce::Component,
     shouldShowFFTAnalysis = enabled;
   }
 
+  void updateGainReductions(float lowBandGR, float midBandGR, float highBandGR);
+
  private:
   ThreeBandCompressorOiuAudioProcessor& audioProcessor;
 
@@ -70,6 +72,10 @@ struct SpectrumAnalyzer : juce::Component,
   juce::AudioParameterFloat* lowBandThredholdParam{nullptr};
   juce::AudioParameterFloat* midBandThredholdParam{nullptr};
   juce::AudioParameterFloat* highBandThredholdParam{nullptr};
-  void drawBandParameterLines(juce::Graphics& g,
-                              juce::Rectangle<int> backgroundBounds);
+  // Used to draw gain reduction for each band compressor
+  float lowBandGainReduction{0.f};
+  float midBandGainReduction{0.f};
+  float highBandGainReduction{0.f};
+  void drawBandParameterLinesAndGainReductions(
+      juce::Graphics& g, juce::Rectangle<int> backgroundBounds);
 };

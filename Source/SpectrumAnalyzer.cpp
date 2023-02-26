@@ -59,7 +59,7 @@ void SpectrumAnalyzer::paint(juce::Graphics& g) {
 
   g.setColour(Colours::black);
 
-  drawBandParameterLines(g, backgroundBounds);
+  drawBandParameterLinesAndGainReductions(g, backgroundBounds);
   drawTextLabels(g, backgroundBounds);
 }
 
@@ -198,6 +198,14 @@ void SpectrumAnalyzer::resized() {
   rightPathProducer.setNegativeInfinity(negInf);
 }
 
+void SpectrumAnalyzer::updateGainReductions(float lowBandGR, float midBandGR,
+                                            float highBandGR) {
+  std::tie(lowBandGainReduction, midBandGainReduction, highBandGainReduction) =
+      std::tuple{lowBandGR, midBandGR, highBandGR};
+
+  repaint();
+}
+
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex,
                                              float newValue) {
   parametersChanged.set(true);
@@ -257,15 +265,16 @@ void SpectrumAnalyzer::drawFFTAnalysis(juce::Graphics& g,
   }
 }
 
-void SpectrumAnalyzer::drawBandParameterLines(
+void SpectrumAnalyzer::drawBandParameterLinesAndGainReductions(
     juce::Graphics& g, juce::Rectangle<int> backgroundBounds) {
   using namespace juce;
   auto analysisArea = getAnalysisArea(backgroundBounds);
+  const auto left = analysisArea.getX();
+  const auto right = analysisArea.getRight();
   const auto top = analysisArea.getY();
   const auto bottom = analysisArea.getBottom();
 
-  auto mapX = [left = analysisArea.getX(),
-               width = analysisArea.getWidth()](float frequency) {
+  auto mapX = [left = left, width = analysisArea.getWidth()](float frequency) {
     auto normX = juce::mapFromLog10(frequency, MIN_FREQ, MAX_FREQ);
     return (left + width * normX);
   };
@@ -284,7 +293,16 @@ void SpectrumAnalyzer::drawBandParameterLines(
   auto midBandThresholdY = mapY(midBandThredholdParam->get());
   auto highBandThresholdY = mapY(highBandThredholdParam->get());
   g.setColour(Colours::yellow);
-  g.drawHorizontalLine(lowBandThresholdY, analysisArea.getX(), lowMidX);
+  g.drawHorizontalLine(lowBandThresholdY, left, lowMidX);
   g.drawHorizontalLine(midBandThresholdY, lowMidX, midHighX);
-  g.drawHorizontalLine(highBandThresholdY, midHighX, analysisArea.getRight());
+  g.drawHorizontalLine(highBandThresholdY, midHighX, right);
+
+  auto zeroDbY = mapY(0.f);
+  g.setColour(Colours::hotpink.withAlpha(0.3f));
+  g.fillRect(Rectangle<float>::leftTopRightBottom(left, zeroDbY, lowMidX,
+                                                  mapY(lowBandGainReduction)));
+  g.fillRect(Rectangle<float>::leftTopRightBottom(lowMidX, zeroDbY, midHighX,
+                                                  mapY(midBandGainReduction)));
+  g.fillRect(Rectangle<float>::leftTopRightBottom(midHighX, zeroDbY, right,
+                                                  mapY(highBandGainReduction)));
 }

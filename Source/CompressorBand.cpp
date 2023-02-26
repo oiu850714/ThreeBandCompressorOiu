@@ -58,9 +58,21 @@ void CompressorBand::updateCompressorSettings() {
   compressor.setRatio(ratio->getCurrentChoiceName().getFloatValue());
 }
 
+static float computeRMSLevel(const juce::AudioBuffer<float> &buffer) noexcept {
+  auto numChannels = buffer.getNumChannels();
+  auto numSamples = buffer.getNumSamples();
+  auto rms = 0.f;
+  for (int channel = 0; channel < numChannels; channel++) {
+    rms += buffer.getRMSLevel(channel, 0, numSamples);
+  }
+  return rms / (float) numChannels;
+}
+
 void CompressorBand::process(juce::AudioBuffer<float> &buffer) {
+  inputRMSLevelDb.store(juce::Decibels::gainToDecibels(computeRMSLevel(buffer)));
   auto dspBlock = juce::dsp::AudioBlock<float>(buffer);
   auto dspContext = juce::dsp::ProcessContextReplacing<float>(dspBlock);
   dspContext.isBypassed = bypassed->get();
   compressor.process(dspContext);
+  outputRMSLevelDb.store(juce::Decibels::gainToDecibels(computeRMSLevel(buffer)));
 }

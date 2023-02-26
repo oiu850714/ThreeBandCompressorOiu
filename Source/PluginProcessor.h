@@ -66,13 +66,26 @@ class ThreeBandCompressorOiuAudioProcessor
   SingleChannelSampleFifo<BlockType> leftChannelFifo{Channel::Left};
   SingleChannelSampleFifo<BlockType> rightChannelFifo{Channel::Right};
 
+  // TODO: make interface easy to use...
+  // The element order is implicit.
+  std::array<float, 6> getLowMidHighBandRMSLevels() const {
+    return {
+      lowBandCompressor.getInputRMSLevelDb(),
+      lowBandCompressor.getOutputRMSLevelDb(),
+      midBandCompressor.getInputRMSLevelDb(),
+      midBandCompressor.getOutputRMSLevelDb(),
+      highBandCompressor.getInputRMSLevelDb(),
+      highBandCompressor.getOutputRMSLevelDb(),
+    };
+  }
+
  private:
   //==============================================================================
   std::array<CompressorBand, 3> compressors;
   // Create alias for getting and setting individual compressor's parameters.
   CompressorBand &lowBandCompressor = compressors[0],
                  &midBandCompressor = compressors[1],
-                 highBandCompressor = compressors[2];
+                 &highBandCompressor = compressors[2];
 
   //==============================================================================
   // See: https://youtu.be/Mo0Oco3Vimo?t=9033
