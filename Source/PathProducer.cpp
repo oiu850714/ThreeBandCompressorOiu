@@ -23,7 +23,8 @@ void PathProducer::process(juce::Rectangle<float> fftBounds,
       auto writePointer = monoBuffer.getWritePointer(0, 0);
       auto readPointer = monoBuffer.getReadPointer(0, size);
 
-      std::copy(readPointer, readPointer + (monoBuffer.getNumSamples() - size), writePointer);
+      std::copy(readPointer, readPointer + (monoBuffer.getNumSamples() - size),
+                writePointer);
 
       juce::FloatVectorOperations::copy(
           monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size),

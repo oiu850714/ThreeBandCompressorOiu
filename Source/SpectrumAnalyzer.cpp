@@ -51,13 +51,14 @@ void SpectrumAnalyzer::paint(juce::Graphics& g) {
 
 std::vector<float> SpectrumAnalyzer::getFrequencies() {
   return std::vector<float>{
-      20,   /*30, 40,*/ 50,       100,   200,  /*300, 400,*/ 500, 1000,
-      2000, /*3000, 4000,*/ 5000, 10000, 20000};
+      MIN_FREQ, /*30, 40,*/ 50,       100,   200,     /*300, 400,*/ 500, 1000,
+      2000,     /*3000, 4000,*/ 5000, 10000, MAX_FREQ};
 }
 
 std::vector<float> SpectrumAnalyzer::getGains() {
   std::vector<float> gains;
-  for (auto gain = DECIBAL_NEGATIVE_INFINITY; gain <= DECIBAL_MAX; gain += DECIBAL_INCREMENT) {
+  for (auto gain = DECIBAL_NEGATIVE_INFINITY; gain <= DECIBAL_MAX;
+       gain += DECIBAL_INCREMENT) {
     gains.push_back(gain);
   }
   return gains;
@@ -67,7 +68,7 @@ std::vector<float> SpectrumAnalyzer::getXs(const std::vector<float>& freqs,
                                            float left, float width) {
   std::vector<float> xs;
   for (auto f : freqs) {
-    auto normX = juce::mapFromLog10(f, 20.f, 20000.f);
+    auto normX = juce::mapFromLog10(f, MIN_FREQ, MAX_FREQ);
     xs.push_back(left + width * normX);
   }
 
@@ -96,7 +97,8 @@ void SpectrumAnalyzer::drawBackgroundGrid(
   auto gain = getGains();
 
   for (auto gDb : gain) {
-    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom), float(top));
+    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom),
+                  float(top));
 
     g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey);
     g.drawHorizontalLine(y, left, right);
@@ -149,7 +151,8 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
   auto gain = getGains();
 
   for (auto gDb : gain) {
-    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom), float(top));
+    auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom),
+                  float(top));
 
     String str;
     if (gDb > 0) str << "+";
@@ -174,8 +177,9 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
 void SpectrumAnalyzer::resized() {
   auto bounds = getLocalBounds();
   auto fftBounds = getAnalysisArea(bounds).toFloat();
-  auto negInf = juce::jmap(bounds.toFloat().getBottom(), fftBounds.getBottom(),
-                           fftBounds.getY(), DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX);
+  auto negInf =
+      juce::jmap(bounds.toFloat().getBottom(), fftBounds.getBottom(),
+                 fftBounds.getY(), DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX);
   leftPathProducer.setNegativeInfinity(negInf);
   rightPathProducer.setNegativeInfinity(negInf);
 }

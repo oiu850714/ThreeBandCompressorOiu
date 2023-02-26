@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+
 #include "AnalyzerPathGenerator.h"
 #include "FFTDataGenerator.h"
 #include "PluginProcessor.h"
@@ -28,6 +29,7 @@ struct PathProducer {
   juce::Path getPath() { return leftChannelFFTPath; }
 
   void setNegativeInfinity(float val) noexcept { negativeInfinity = val; }
+
  private:
   SingleChannelSampleFifo<ThreeBandCompressorOiuAudioProcessor::BlockType>*
       leftChannelFifo;
@@ -40,5 +42,5 @@ struct PathProducer {
 
   juce::Path leftChannelFFTPath;
 
-  float negativeInfinity { -48.f };
+  float negativeInfinity{-48.f};
 };

@@ -18,11 +18,12 @@ static APVTS::ParameterLayout createParameterLayout() {
   using namespace Params;
   const auto& params = Params::getParams();
   const NormalisableRange<float> gainRange{-24.f, 24.f, 0.5f, 1.f};
-  const NormalisableRange<float> thresholdRange(COMPRESSOR_MIN_THRESHOLD, DECIBAL_MAX, 1.f, 1.f);
+  const NormalisableRange<float> thresholdRange(COMPRESSOR_MIN_THRESHOLD,
+                                                DECIBAL_MAX, 1.f, 1.f);
   const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
       releaseRange = attackRange;
-  const NormalisableRange<float> lowMidCutRange{20.f, 999.f, 1.f, 0.2f};
-  const NormalisableRange<float> MidHighCutRange{1000.f, 20000.f, 1.f, 0.2f};
+  const NormalisableRange<float> lowMidCutRange{MIN_FREQ, 999.f, 1.f, 0.2f};
+  const NormalisableRange<float> MidHighCutRange{1000.f, MAX_FREQ, 1.f, 0.2f};
   const auto ratioChoices = [] {
     std::vector<double> choices{1, 1.5, 2,  3,  4,  5,  6,
                                 7, 8,   10, 15, 20, 50, 100};
