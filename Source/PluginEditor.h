@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 
 #include "CompressorBandControlsComponent.h"
+#include "ControlBar.h"
 #include "CustomSlider.h"
 #include "GlobalControlsComponent.h"
 #include "PluginProcessor.h"
@@ -48,7 +49,7 @@ class ThreeBandCompressorOiuAudioProcessorEditor
   GlobalControls globalControls{audioProcessor.apvts};
   CompressorBandControls bandControls{audioProcessor.apvts};
   SpectrumAnalyzer analyzer{audioProcessor};
-  Placeholder controlBar;
+  ControlBar controlBar;
 
   // Used to update input/output RMS level for each compressor band.
   void timerCallback() override;

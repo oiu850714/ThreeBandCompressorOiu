@@ -20,6 +20,9 @@ ThreeBandCompressorOiuAudioProcessorEditor::
   // editor's size to whatever you need it to be.
   setSize(600, 500);
 
+  controlBar.analyzerButton.onClick = [this](){
+    analyzer.toggleAnalysisEnablement(controlBar.analyzerButton.getToggleState());
+  };
   addAndMakeVisible(controlBar);
   addAndMakeVisible(analyzer);
   addAndMakeVisible(globalControls);
