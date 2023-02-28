@@ -11,6 +11,7 @@
 */
 
 #include "CustomSlider.h"
+
 #include "CustomButton.h"
 
 void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y,
@@ -96,7 +97,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);
 
     auto color =
-        toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1u);
+        toggleButton.getToggleState() ? Colours::dimgrey : Colours::red;
 
     g.setColour(color);
     g.strokePath(powerButton, pst);
