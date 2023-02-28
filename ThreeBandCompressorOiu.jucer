@@ -6,6 +6,10 @@
   <MAINGROUP id="Sgu6M2" name="ThreeBandCompressorOiu">
     <GROUP id="{DFDE9391-D014-11E2-E7EF-DFA10FD37929}" name="Source">
       <GROUP id="{3A8B66E0-B808-20D0-18C1-01A70D57C90E}" name="GUI">
+        <FILE id="SmEPEo" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/CustomLookAndFeel.cpp"/>
+        <FILE id="KAyL8B" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/CustomLookAndFeel.h"/>
         <FILE id="JfOOoW" name="AnalyzerPathGenerator.h" compile="0" resource="0"
               file="Source/AnalyzerPathGenerator.h"/>
         <FILE id="MhcQ71" name="CompressorBandControlsComponent.cpp" compile="1"

@@ -12,6 +12,7 @@
 
 #include "CompressorBandControlsComponent.h"
 #include "ControlBar.h"
+#include "CustomLookAndFeel.h"
 #include "CustomSlider.h"
 #include "GlobalControlsComponent.h"
 #include "PluginProcessor.h"

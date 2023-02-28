@@ -20,16 +20,6 @@ class RotarySlider : public juce::Slider {
                      juce::Slider::NoTextBox) {}
 };
 
-struct CustomLookAndFeel : juce::LookAndFeel_V4 {
-  void drawRotarySlider(juce::Graphics &, int x, int y, int width, int height,
-                        float sliderPosProportional, float rotaryStartAngle,
-                        float rotaryEndAngle, juce::Slider &) override;
-
-  void drawToggleButton(juce::Graphics &g, juce::ToggleButton &toggleButton,
-                        bool shouldDrawButtonAsHighlighted,
-                        bool shouldDrawButtonAsDown) override;
-};
-
 template <typename T>
 juce::String unitValueTruncatedOver1K(T val, const juce::String &suffix) {
   juce::String Ret;
@@ -89,4 +79,3 @@ class RotaryRatioSlider : public RotarySliderWithLabels {
  private:
   void setMinMaxLabels() override;
 };
-
