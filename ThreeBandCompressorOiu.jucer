@@ -12,9 +12,12 @@
               resource="0" file="Source/CompressorBandControlsComponent.cpp"/>
         <FILE id="Ytgmrd" name="CompressorBandControlsComponent.h" compile="0"
               resource="0" file="Source/CompressorBandControlsComponent.h"/>
+        <FILE id="vQNF8j" name="ControlBar.cpp" compile="1" resource="0" file="Source/ControlBar.cpp"/>
+        <FILE id="rvL9Rs" name="ControlBar.h" compile="0" resource="0" file="Source/ControlBar.h"/>
         <FILE id="y6vnil" name="CustomSlider.cpp" compile="1" resource="0"
               file="Source/CustomSlider.cpp"/>
         <FILE id="QU1jZA" name="CustomSlider.h" compile="0" resource="0" file="Source/CustomSlider.h"/>
+        <FILE id="whzu8f" name="CustomButton.h" compile="0" resource="0" file="Source/CustomButton.h"/>
         <FILE id="kzHr3q" name="FFTDataGenerator.h" compile="0" resource="0"
               file="Source/FFTDataGenerator.h"/>
         <FILE id="OMvRZv" name="GlobalControlsComponent.cpp" compile="1" resource="0"
