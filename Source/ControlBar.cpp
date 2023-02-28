@@ -13,7 +13,10 @@
 ControlBar::ControlBar() {
   analyzerButton.setToggleState(true,
                                 juce::NotificationType::dontSendNotification);
+  globalBypassButton.setToggleState(
+      true, juce::NotificationType::dontSendNotification);
   addAndMakeVisible(analyzerButton);
+  addAndMakeVisible(globalBypassButton);
 }
 
 void ControlBar::resized() {
@@ -21,4 +24,7 @@ void ControlBar::resized() {
 
   analyzerButton.setBounds(
       bounds.removeFromLeft(50).withTrimmedTop(4).withTrimmedBottom(4));
+
+  globalBypassButton.setBounds(
+      bounds.removeFromRight(60).withTrimmedTop(2).withTrimmedBottom(2));
 }

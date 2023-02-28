@@ -55,6 +55,8 @@ class ThreeBandCompressorOiuAudioProcessorEditor
   // Used to update input/output RMS level for each compressor band.
   void timerCallback() override;
 
+  void toggleGlobalBypassState();
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       ThreeBandCompressorOiuAudioProcessorEditor)
 };

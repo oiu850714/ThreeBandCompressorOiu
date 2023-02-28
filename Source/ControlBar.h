@@ -21,4 +21,5 @@ class ControlBar : public juce::Component {
 
  public:
   AnalyzerButton analyzerButton;
+  PowerButton globalBypassButton;
 };

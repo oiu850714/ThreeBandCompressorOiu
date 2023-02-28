@@ -7,6 +7,7 @@
 */
 
 #include "PluginEditor.h"
+#include "ParamIDConst.h"
 
 #include "PluginProcessor.h"
 
@@ -20,9 +21,13 @@ ThreeBandCompressorOiuAudioProcessorEditor::
   // editor's size to whatever you need it to be.
   setSize(600, 500);
 
-  controlBar.analyzerButton.onClick = [this](){
+  controlBar.analyzerButton.onClick = [this]{
     analyzer.toggleAnalysisEnablement(controlBar.analyzerButton.getToggleState());
   };
+  controlBar.globalBypassButton.onClick = [this] {
+    toggleGlobalBypassState();
+  };
+
   addAndMakeVisible(controlBar);
   addAndMakeVisible(analyzer);
   addAndMakeVisible(globalControls);
@@ -67,6 +72,25 @@ void ThreeBandCompressorOiuAudioProcessorEditor::timerCallback() {
                                 midOutputRMS - midInputRMS,
                                 highOutputRMS - highInputRMS);
   // clang-format on
+}
+
+void ThreeBandCompressorOiuAudioProcessorEditor::toggleGlobalBypassState() {
+  auto getParamAndCast = [&apvts = audioProcessor.apvts] (auto Name){
+    return static_cast<juce::AudioParameterBool*>(Params::getParams(apvts, Name));
+  };
+  std::array bypassParams = {
+    getParamAndCast(Params::Names::Bypassed_Low_Band),
+    getParamAndCast(Params::Names::Bypassed_Mid_Band),
+    getParamAndCast(Params::Names::Bypassed_High_Band),
+  };
+
+  auto shouldGlobalBypassed = !controlBar.globalBypassButton.getToggleState();
+  for (auto *bypassParam : bypassParams) {
+    // Refer to AudioProcessorParameter::setValueNotifyingHost
+    bypassParam->beginChangeGesture();
+    bypassParam->setValueNotifyingHost(shouldGlobalBypassed);
+    bypassParam->endChangeGesture();
+  }
 }
 
 ThreeBandCompressorOiuAudioProcessorEditor::Placeholder::Placeholder() {
