@@ -12,6 +12,14 @@
 #include "PluginEditor.h"
 
 using APVTS = juce::AudioProcessorValueTreeState;
+
+template <typename ParamTy, typename... Args>
+auto makeAudioParam(auto ParamEnum, Args&&... args) {
+  auto& params = Params::getParams();
+  return std::make_unique<ParamTy>(params.at(ParamEnum), params.at(ParamEnum),
+                                   std::forward<Args>(args)...);
+};
+
 static APVTS::ParameterLayout createParameterLayout() {
   using namespace juce;
 
@@ -38,81 +46,41 @@ static APVTS::ParameterLayout createParameterLayout() {
     }
     return choicesStr;
   }();
+
+  using APFloat = AudioParameterFloat;
+  using APBool = AudioParameterBool;
+  using APChoice = AudioParameterChoice;
   return {
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Gain_In), params.at(Names::Gain_In), gainRange, 0.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Gain_Out),
-                                            params.at(Names::Gain_Out),
-                                            gainRange, 0.f),
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Threshold_Low_Band),
-          params.at(Names::Threshold_Low_Band), thresholdRange, 0.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Low_Band),
-                                            params.at(Names::Attack_Low_Band),
-                                            attackRange, 50.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Release_Low_Band),
-                                            params.at(Names::Release_Low_Band),
-                                            releaseRange, 250.f),
-      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Low_Band),
-                                             params.at(Names::Ratio_Low_Band),
-                                             ratioChoices, defaultRatioIdx),
-      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Low_Band),
-                                           params.at(Names::Bypassed_Low_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Mute_Low_Band),
-                                           params.at(Names::Mute_Low_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Solo_Low_Band),
-                                           params.at(Names::Solo_Low_Band),
-                                           false),
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Threshold_Mid_Band),
-          params.at(Names::Threshold_Mid_Band), thresholdRange, 0.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_Mid_Band),
-                                            params.at(Names::Attack_Mid_Band),
-                                            attackRange, 50.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Release_Mid_Band),
-                                            params.at(Names::Release_Mid_Band),
-                                            releaseRange, 250.f),
-      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Mid_Band),
-                                             params.at(Names::Ratio_Mid_Band),
-                                             ratioChoices, defaultRatioIdx),
-      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Mid_Band),
-                                           params.at(Names::Bypassed_Mid_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Mute_Mid_Band),
-                                           params.at(Names::Mute_Mid_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Solo_Mid_Band),
-                                           params.at(Names::Solo_Mid_Band),
-                                           false),
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Threshold_High_Band),
-          params.at(Names::Threshold_High_Band), thresholdRange, 0.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Attack_High_Band),
-                                            params.at(Names::Attack_High_Band),
-                                            attackRange, 50.f),
-      std::make_unique<AudioParameterFloat>(params.at(Names::Release_High_Band),
-                                            params.at(Names::Release_High_Band),
-                                            releaseRange, 250.f),
-      std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_High_Band),
-                                             params.at(Names::Ratio_High_Band),
-                                             ratioChoices, defaultRatioIdx),
-      std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_High_Band),
-                                           params.at(Names::Bypassed_High_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Mute_High_Band),
-                                           params.at(Names::Mute_High_Band),
-                                           false),
-      std::make_unique<AudioParameterBool>(params.at(Names::Solo_High_Band),
-                                           params.at(Names::Solo_High_Band),
-                                           false),
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Low_Mid_Crossover_Freq),
-          params.at(Names::Low_Mid_Crossover_Freq), lowMidCutRange, 400.f),
-      std::make_unique<AudioParameterFloat>(
-          params.at(Names::Mid_High_Crossover_Freq),
-          params.at(Names::Mid_High_Crossover_Freq), MidHighCutRange, 2000.f),
+      makeAudioParam<APFloat>(Names::Gain_In, gainRange, 0.f),
+      makeAudioParam<APFloat>(Names::Gain_Out, gainRange, 0.f),
+      makeAudioParam<APFloat>(Names::Threshold_Low_Band, thresholdRange, 0.f),
+      makeAudioParam<APFloat>(Names::Attack_Low_Band, attackRange, 50.f),
+      makeAudioParam<APFloat>(Names::Release_Low_Band, releaseRange, 250.f),
+      makeAudioParam<APChoice>(Names::Ratio_Low_Band, ratioChoices,
+                               defaultRatioIdx),
+      makeAudioParam<APBool>(Names::Bypassed_Low_Band, false),
+      makeAudioParam<APBool>(Names::Mute_Low_Band, false),
+      makeAudioParam<APBool>(Names::Solo_Low_Band, false),
+      makeAudioParam<APFloat>(Names::Threshold_Mid_Band, thresholdRange, 0.f),
+      makeAudioParam<APFloat>(Names::Attack_Mid_Band, attackRange, 50.f),
+      makeAudioParam<APFloat>(Names::Release_Mid_Band, releaseRange, 250.f),
+      makeAudioParam<APChoice>(Names::Ratio_Mid_Band, ratioChoices,
+                               defaultRatioIdx),
+      makeAudioParam<APBool>(Names::Bypassed_Mid_Band, false),
+      makeAudioParam<APBool>(Names::Mute_Mid_Band, false),
+      makeAudioParam<APBool>(Names::Solo_Mid_Band, false),
+      makeAudioParam<APFloat>(Names::Threshold_High_Band, thresholdRange, 0.f),
+      makeAudioParam<APFloat>(Names::Attack_High_Band, attackRange, 50.f),
+      makeAudioParam<APFloat>(Names::Release_High_Band, releaseRange, 250.f),
+      makeAudioParam<APChoice>(Names::Ratio_High_Band, ratioChoices,
+                               defaultRatioIdx),
+      makeAudioParam<APBool>(Names::Bypassed_High_Band, false),
+      makeAudioParam<APBool>(Names::Mute_High_Band, false),
+      makeAudioParam<APBool>(Names::Solo_High_Band, false),
+      makeAudioParam<APFloat>(Names::Low_Mid_Crossover_Freq, lowMidCutRange,
+                              400.f),
+      makeAudioParam<APFloat>(Names::Mid_High_Crossover_Freq, MidHighCutRange,
+                              2000.f),
   };
 }
 
