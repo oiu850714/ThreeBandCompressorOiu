@@ -17,13 +17,18 @@ static APVTS::ParameterLayout createParameterLayout() {
 
   using namespace Params;
   const auto& params = Params::getParams();
-  const NormalisableRange<float> gainRange{-24.f, 24.f, 0.5f, 1.f};
+  const auto dBUnitSkew = 1.f, timeUnitSkew = 1.f;
+  const auto freqUnitSkew = 0.2f;
+  const NormalisableRange<float> gainRange{-24.f, 24.f, 0.5f, dBUnitSkew};
   const NormalisableRange<float> thresholdRange(COMPRESSOR_MIN_THRESHOLD,
-                                                DECIBAL_MAX, 1.f, 1.f);
-  const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, 1.f},
+                                                DECIBAL_MAX, 1.f, dBUnitSkew);
+  const NormalisableRange<float> attackRange{5.f, 500.f, 1.f, timeUnitSkew},
       releaseRange = attackRange;
-  const NormalisableRange<float> lowMidCutRange{MIN_FREQ, 999.f, 1.f, 0.2f};
-  const NormalisableRange<float> MidHighCutRange{1000.f, MAX_FREQ, 1.f, 0.2f};
+  const NormalisableRange<float> lowMidCutRange{MIN_FREQ, 999.f, 1.f,
+                                                freqUnitSkew};
+  const NormalisableRange<float> MidHighCutRange{1000.f, MAX_FREQ, 1.f,
+                                                 freqUnitSkew};
+  const auto defaultRatioIdx = 3;
   const auto ratioChoices = [] {
     std::vector<double> choices{1, 1.5, 2,  3,  4,  5,  6,
                                 7, 8,   10, 15, 20, 50, 100};
@@ -50,7 +55,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                             releaseRange, 250.f),
       std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Low_Band),
                                              params.at(Names::Ratio_Low_Band),
-                                             ratioChoices, 3),
+                                             ratioChoices, defaultRatioIdx),
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Low_Band),
                                            params.at(Names::Bypassed_Low_Band),
                                            false),
@@ -71,7 +76,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                             releaseRange, 250.f),
       std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_Mid_Band),
                                              params.at(Names::Ratio_Mid_Band),
-                                             ratioChoices, 3),
+                                             ratioChoices, defaultRatioIdx),
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_Mid_Band),
                                            params.at(Names::Bypassed_Mid_Band),
                                            false),
@@ -92,7 +97,7 @@ static APVTS::ParameterLayout createParameterLayout() {
                                             releaseRange, 250.f),
       std::make_unique<AudioParameterChoice>(params.at(Names::Ratio_High_Band),
                                              params.at(Names::Ratio_High_Band),
-                                             ratioChoices, 3),
+                                             ratioChoices, defaultRatioIdx),
       std::make_unique<AudioParameterBool>(params.at(Names::Bypassed_High_Band),
                                            params.at(Names::Bypassed_High_Band),
                                            false),
@@ -211,10 +216,10 @@ void ThreeBandCompressorOiuAudioProcessor::changeProgramName(
 //==============================================================================
 void ThreeBandCompressorOiuAudioProcessor::prepareToPlay(double sampleRate,
                                                          int samplesPerBlock) {
-  juce::dsp::ProcessSpec spec;
-  spec.maximumBlockSize = samplesPerBlock;
-  spec.numChannels = getTotalNumOutputChannels();
-  spec.sampleRate = sampleRate;
+  juce::dsp::ProcessSpec spec{
+      .sampleRate = sampleRate,
+      .maximumBlockSize = (juce::uint32)samplesPerBlock,
+      .numChannels = (juce::uint32)getTotalNumOutputChannels()};
 
   for (auto& compressor : compressors) {
     compressor.prepare(spec);
@@ -399,8 +404,8 @@ void ThreeBandCompressorOiuAudioProcessor::setStateInformation(
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.
-  auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
-  if (tree.isValid()) {
+  if (auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+      tree.isValid()) {
     apvts.replaceState(tree);
   }
 }
