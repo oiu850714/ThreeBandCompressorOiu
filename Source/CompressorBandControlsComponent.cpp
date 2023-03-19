@@ -76,8 +76,8 @@ void CompressorBandControls::paint(juce::Graphics &g) {
 }
 
 void CompressorBandControls::buttonClicked(juce::Button *button) {
-  updateSliderEnablements();
   updateToggleStates(*button);
+  updateSliderEnablements();
 }
 void CompressorBandControls::updateSliderEnablements() {
   auto disabled = muteBtn.getToggleState() || bypassBtn.getToggleState();
