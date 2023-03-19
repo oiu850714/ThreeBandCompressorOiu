@@ -38,7 +38,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y,
     r.setLeft(center.getX() - 2);
     r.setRight(center.getX() + 2);
     r.setTop(bounds.getY());
-    r.setBottom(center.getY() - rswl->getTextHeight() * 1.5);
+    r.setBottom(bounds.getY() + rswl->getTextHeight() * 1.5);
 
     p.addRoundedRectangle(r, 2.f);
 
