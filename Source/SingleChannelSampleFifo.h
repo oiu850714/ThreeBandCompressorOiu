@@ -11,10 +11,7 @@
 #pragma once
 #include "Fifo.h"
 
-enum Channel {
-  Right,  // effectively 0
-  Left    // effectively 1
-};
+enum Channel { Left, Right };
 
 template <typename BlockType>
 struct SingleChannelSampleFifo {
