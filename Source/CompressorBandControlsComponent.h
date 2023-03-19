@@ -16,7 +16,7 @@
 class CompressorBandControls : public juce::Component,
                                private juce::Button::Listener {
  public:
-  CompressorBandControls(juce::AudioProcessorValueTreeState &apv);
+  CompressorBandControls(juce::AudioProcessorValueTreeState &apvts);
   ~CompressorBandControls() override;
   void resized() override;
   void paint(juce::Graphics &g) override;

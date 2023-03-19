@@ -16,9 +16,9 @@
 using namespace Params;
 
 CompressorBandControls::CompressorBandControls(
-    juce::AudioProcessorValueTreeState &apv)
+    juce::AudioProcessorValueTreeState &apvts)
     // clang-format off
-  : apvts(apv),
+  : apvts(apvts),
     attackSlider    {nullptr, "ms", "Attack"},
     releaseSlider   {nullptr, "ms", "Release"},
     thresholdSlider {nullptr, "dB", "Threshold"},
@@ -136,10 +136,10 @@ void CompressorBandControls::updateParamSelection() {
 
   auto updateSlidersParam = [this](auto attack, auto release, auto threshold,
                                    auto ratio) {
-    attackSlider.changeParam(getParams(apvts, attack));
-    releaseSlider.changeParam(getParams(apvts, release));
-    thresholdSlider.changeParam(getParams(apvts, threshold));
-    ratioSlider.changeParam(getParams(apvts, ratio));
+    attackSlider.changeParam(getParam(apvts, attack));
+    releaseSlider.changeParam(getParam(apvts, release));
+    thresholdSlider.changeParam(getParam(apvts, threshold));
+    ratioSlider.changeParam(getParam(apvts, ratio));
   };
 
   auto updateAttachments = [this, updateAttachment](auto attack, auto release,

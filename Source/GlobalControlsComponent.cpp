@@ -16,21 +16,20 @@
 using namespace Params;
 
 GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState &apvts)
-    // clang-format off
-    : inGainSlider      {getParams(apvts, Names::Gain_In), "dB", "Input Trim"},
-      lowMidXoverSlider {getParams(apvts, Names::Low_Mid_Crossover_Freq), "Hz", "Low-Mid X-over"},
-      midHighXoverSlider{getParams(apvts, Names::Mid_High_Crossover_Freq), "Hz", "Mid-High X-over"},
-      outGainSlider     {getParams(apvts, Names::Gain_In), "dB", "Output Trim"} {
+  // clang-format off
+    : inGainSlider      {getParam(apvts, Names::Gain_In), "dB", "Input Trim"},
+      lowMidXoverSlider {getParam(apvts, Names::Low_Mid_Crossover_Freq), "Hz", "Low-Mid X-over"},
+      midHighXoverSlider{getParam(apvts, Names::Mid_High_Crossover_Freq), "Hz", "Mid-High X-over"},
+      outGainSlider     {getParam(apvts, Names::Gain_In), "dB", "Output Trim"} {
   // clang-format on
-  using namespace Params;
-  auto &params = Params::getParams();
 
   inGainSlider.setMinMaxLabels();
   lowMidXoverSlider.setMinMaxLabels();
   midHighXoverSlider.setMinMaxLabels();
   outGainSlider.setMinMaxLabels();
 
-  auto makeAttachment = [&params, &apvts](auto &slider, auto param) {
+  auto makeAttachment = [&params = Params::getParams(), &apvts](auto &slider,
+                                                                auto param) {
     return std::make_unique<Attachment>(apvts, params.at(param), slider);
   };
 

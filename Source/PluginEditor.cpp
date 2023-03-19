@@ -66,7 +66,7 @@ void ThreeBandCompressorOiuAudioProcessorEditor::timerCallback() {
 
 void ThreeBandCompressorOiuAudioProcessorEditor::toggleGlobalBypassState() {
   auto getParamAndCast = [&apvts = audioProcessor.apvts] (auto Name){
-    return static_cast<juce::AudioParameterBool*>(Params::getParams(apvts, Name));
+    return static_cast<juce::AudioParameterBool*>(Params::getParam(apvts, Name));
   };
   std::array bypassParams = {
     getParamAndCast(Params::Names::Bypassed_Low_Band),
