@@ -43,8 +43,8 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer {
                           juce::Rectangle<int> backgroundBounds);
   void drawTextLabels(juce::Graphics& g, juce::Rectangle<int> backgroundBounds);
 
-  std::vector<float> getFrequencies();
-  std::vector<float> getGains();
+  std::vector<float> getFrequencyScales();
+  std::vector<float> getGainScales();
   std::vector<float> getXs(const std::vector<float>& freqs, float left,
                            float width);
 

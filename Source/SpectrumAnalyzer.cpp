@@ -20,7 +20,6 @@ SpectrumAnalyzer::SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor& p)
     : audioProcessor(p),
       leftPathProducer(audioProcessor.leftChannelFifo),
       rightPathProducer(audioProcessor.rightChannelFifo) {
-
   auto setParam = [&apvts = audioProcessor.apvts,
                    &params = Params::getParams()](auto& paramPtr,
                                                   const auto& paramName) {
@@ -52,13 +51,13 @@ void SpectrumAnalyzer::paint(juce::Graphics& g) {
   drawTextLabels(g, backgroundBounds);
 }
 
-std::vector<float> SpectrumAnalyzer::getFrequencies() {
+std::vector<float> SpectrumAnalyzer::getFrequencyScales() {
   return std::vector<float>{
       MIN_FREQ, /*30, 40,*/ 50,       100,   200,     /*300, 400,*/ 500, 1000,
       2000,     /*3000, 4000,*/ 5000, 10000, MAX_FREQ};
 }
 
-std::vector<float> SpectrumAnalyzer::getGains() {
+std::vector<float> SpectrumAnalyzer::getGainScales() {
   std::vector<float> gains;
   for (auto gain = DECIBAL_NEGATIVE_INFINITY; gain <= DECIBAL_MAX;
        gain += DECIBAL_INCREMENT) {
@@ -81,7 +80,7 @@ std::vector<float> SpectrumAnalyzer::getXs(const std::vector<float>& freqs,
 void SpectrumAnalyzer::drawBackgroundGrid(
     juce::Graphics& g, juce::Rectangle<int> backgroundBounds) {
   using namespace juce;
-  auto freqs = getFrequencies();
+  auto freqs = getFrequencyScales();
 
   auto renderArea = getAnalysisArea(backgroundBounds);
   auto left = renderArea.getX();
@@ -97,7 +96,7 @@ void SpectrumAnalyzer::drawBackgroundGrid(
     g.drawVerticalLine(x, top, bottom);
   }
 
-  auto gain = getGains();
+  auto gain = getGainScales();
 
   for (auto gDb : gain) {
     auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom),
@@ -122,7 +121,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
   auto bottom = renderArea.getBottom();
   auto width = renderArea.getWidth();
 
-  auto freqs = getFrequencies();
+  auto freqs = getFrequencyScales();
   auto xs = getXs(freqs, left, width);
 
   for (int i = 0; i < freqs.size(); ++i) {
@@ -151,7 +150,7 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics& g,
     g.drawFittedText(str, r, juce::Justification::centred, 1);
   }
 
-  auto gain = getGains();
+  auto gain = getGainScales();
 
   for (auto gDb : gain) {
     auto y = jmap(gDb, DECIBAL_NEGATIVE_INFINITY, DECIBAL_MAX, float(bottom),
@@ -189,8 +188,8 @@ void SpectrumAnalyzer::resized() {
 
 void SpectrumAnalyzer::updateGainReductions(float lowBandGR, float midBandGR,
                                             float highBandGR) {
-  std::tie(lowBandGainReduction, midBandGainReduction, highBandGainReduction) =
-      std::tuple{lowBandGR, midBandGR, highBandGR};
+  std::tie(lowBandGainReduction, midBandGainReduction,
+           highBandGainReduction) = {lowBandGR, midBandGR, highBandGR};
 
   repaint();
 }
