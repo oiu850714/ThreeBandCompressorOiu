@@ -20,10 +20,6 @@ SpectrumAnalyzer::SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor& p)
     : audioProcessor(p),
       leftPathProducer(audioProcessor.leftChannelFifo),
       rightPathProducer(audioProcessor.rightChannelFifo) {
-  const auto& params = audioProcessor.getParameters();
-  for (auto param : params) {
-    param->addListener(this);
-  }
 
   auto setParam = [&apvts = audioProcessor.apvts,
                    &params = Params::getParams()](auto& paramPtr,
@@ -38,13 +34,6 @@ SpectrumAnalyzer::SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor& p)
   setParam(highBandThredholdParam, Params::Names::Threshold_High_Band);
 
   startTimerHz(60);
-}
-
-SpectrumAnalyzer::~SpectrumAnalyzer() {
-  const auto& params = audioProcessor.getParameters();
-  for (auto param : params) {
-    param->removeListener(this);
-  }
 }
 
 void SpectrumAnalyzer::paint(juce::Graphics& g) {
@@ -206,11 +195,6 @@ void SpectrumAnalyzer::updateGainReductions(float lowBandGR, float midBandGR,
   repaint();
 }
 
-void SpectrumAnalyzer::parameterValueChanged(int parameterIndex,
-                                             float newValue) {
-  parametersChanged.set(true);
-}
-
 void SpectrumAnalyzer::timerCallback() {
   if (shouldShowFFTAnalysis) {
     auto fftBounds = getAnalysisArea(getLocalBounds()).toFloat();
@@ -219,9 +203,6 @@ void SpectrumAnalyzer::timerCallback() {
 
     leftPathProducer.process(fftBounds, sampleRate);
     rightPathProducer.process(fftBounds, sampleRate);
-  }
-
-  if (parametersChanged.compareAndSetBool(false, true)) {
   }
 
   repaint();

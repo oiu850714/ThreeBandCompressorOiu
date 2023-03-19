@@ -20,16 +20,8 @@
 #include "PluginProcessor.h"
 #include "SingleChannelSampleFifo.h"
 
-struct SpectrumAnalyzer : juce::Component,
-                          juce::AudioProcessorParameter::Listener,
-                          juce::Timer {
+struct SpectrumAnalyzer : juce::Component, juce::Timer {
   SpectrumAnalyzer(ThreeBandCompressorOiuAudioProcessor&);
-  ~SpectrumAnalyzer();
-
-  void parameterValueChanged(int parameterIndex, float newValue) override;
-
-  void parameterGestureChanged(int parameterIndex,
-                               bool gestureIsStarting) override {}
 
   void timerCallback() override;
 
@@ -46,8 +38,6 @@ struct SpectrumAnalyzer : juce::Component,
   ThreeBandCompressorOiuAudioProcessor& audioProcessor;
 
   bool shouldShowFFTAnalysis = true;
-
-  juce::Atomic<bool> parametersChanged{false};
 
   void drawBackgroundGrid(juce::Graphics& g,
                           juce::Rectangle<int> backgroundBounds);
